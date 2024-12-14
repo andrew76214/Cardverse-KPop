@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodePen</title>
+  <link rel="stylesheet" href="../static/css/style_register.css">
+</head>
+<body>
+  <section>
+    
+    <div class="signin">
+      <div class="content">
+        <h2>Sign Up</h2>
+        <div class="form">
+          <div class="inputBox">
+            <input type="text" id="username" name="username" required>
+            <i>Username</i>
+          </div>
+          
+          <div class="inputBox">
+            <input type="password" id="password" name="password" required>
+            <i>Password</i>
+          </div>
+
+          <div class="inputBox">
+            <input type="email" id="email" name="email" required>
+            <i>Email</i>
+          </div>
+
+          <div class="inputBox">
+            <input type="cn" id="cn" name="cn" required>
+            <i>cn</i>
+          </div>
+          
+          <div class="links">
+            <a href="/login">Signin</a>
+          </div>
+          <div class="inputBox">
+            <input type="submit" id="registerButton" value="Register">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
+
+
+<script>
+  document.getElementById("registerButton").addEventListener("click", async (event) => {
+      event.preventDefault(); // 防止按下按鈕時頁面刷新
+
+      // 獲取用戶輸入的資料
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value;
+      const cn = document.getElementById("cn").value;
+
+      // 檢查輸入
+      if (!username || !password || !email || !cn) {
+          alert("Please fill in all fields");
+          return;
+      }
+
+      // 使用 fetch 提交資料
+      try {
+          const response = await fetch("/create_user", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username, password, email, cn }),
+          });
+
+          if (!response.ok) {
+              // 如果回傳的內容不是 JSON，處理錯誤
+              const errorText = await response.text();
+              console.error("Error response:", errorText);
+              alert("Failed: " + errorText);
+              return;
+          }
+
+          const result = await response.json();
+          if (result.status === "success") {
+              window.location.href = "/login";
+          } else {
+              alert("Error: " + result.message);
+          }
+      } catch (err) {
+          console.error("Error:", err);
+          alert("An error occurred while creating the user.");
+      }
+
+  });
+
+</script>

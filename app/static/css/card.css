@@ -1,0 +1,179 @@
+.ms-card-grid {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-content: space-around;
+  }
+  
+  #photocard1, #photocard2, #photocard3, #photocard4{ 
+    display: inline-block; 
+    width: 250px;
+    height: 400px;
+    margin: 10px;
+  }
+  
+  .ms-card-inside {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.9s;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+  
+  #photocard1:hover .ms-card-inside,
+  #photocard2:hover .ms-card-inside,
+  #photocard3:hover .ms-card-inside,
+  #photocard4:hover .ms-card-inside
+  { 
+    transform: rotateY(180deg); 
+    -webkit-transform: rotateY(180deg); 
+  }
+  
+  #photocard1:hover .ms-card-front, 
+  #photocard2:hover .ms-card-front,
+  #photocard3:hover .ms-card-front,
+  #photocard4:hover .ms-card-front
+  {  
+    transform: translateZ(1px); }
+  
+  .ms-card-front, .ms-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  .ms-card-front {
+    width: 250px;
+    height: 400px;
+    background-color: #333;
+    border-radius: 4%;
+  }
+  
+  .ms-card-front-bg {
+    width: 250px;
+    height: 400px;
+    border-radius: 4%;
+    background-image:url('https://via.placeholder.com/250x400');
+    background-size: cover;
+  }
+  
+  .ms-card-back { 
+    width: 250px;
+    height: 400px;
+    background-color: #f1f1f1;
+    border-radius: 4%;
+    transform: rotateY(180deg); 
+    -webkit-transform: rotateY(180deg); 
+    overflow: hidden;
+  }
+  
+  .ms-tarot-card {
+    margin: 0px;
+    width: 250px;
+    height: 400px;
+    background-color: #333;
+    border-radius: 4%;
+    background-image: url('https://i.pinimg.com/564x/b5/ec/67/b5ec67e70a2989f2c1625c318b5df852.jpg');
+    background-size: cover;
+    display: inline-block;
+  }
+  
+  .ms-tarot-gradient {
+    width: 250px;
+    height: 400px;
+    border-radius: 4%;
+    position: relative;
+    top: -400px;
+  }
+  
+  .ms-tarot-border {
+    position: relative;
+    top: 20px;
+    left: 20px;
+    width: 206px;
+    height: 356px;
+    border: 2px solid rgba(241,241,241,0);
+    border-radius: 2%;
+  }
+  
+  .ms-tarot-title {
+    position: absolute;
+    width: 100%;
+    font-family: 'Poppins';
+    font-weight: 600;
+    font-size: 11px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(241,241,241,.9);
+    bottom: 10px;
+  
+  }
+  
+  .ms-tarot-info {
+    position: absolute;
+    width: 100%;
+    font-family: 'Poppins';
+    font-weight: 600;
+    font-size: 9px;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 20px;
+    color: #333;
+    top: 10px;
+    left: 10px;
+  
+  }
+  
+  .ms-card-sig {
+    width: 100%;
+    position: absolute;
+    top: 200px;
+    left: 0px;
+    font-family: 'starfish';
+    font-size: 35px;
+    line-height: 100px;
+    text-align: center;
+    color: #333;
+    background: -webkit-linear-gradient(141deg, rgba(147,41,30,.5) 0%, rgba(237,33,58,.5) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: rotate(-30deg);
+    -webkit-transform: rotate(-30deg); 
+  }
+  
+  /************** SIGNATURES *************/
+  
+  @font-face { font-family: "shopping"; src: url('https://dl.dropboxusercontent.com/s/mbyg0g1cianbljw/Shopping%20Script%20Demo.ttf'); format("truetype");}
+  
+  .sig1 { font-family: 'Permanent Marker'; font-size: 55px; line-height: 45px; }
+  .sig2 { font-family: 'Sacramento'; font-size: 55px; line-height: 45px; padding: 20px 0px;}
+  .sig3 { font-family: 'Yellowtail'; font-size: 55px; line-height: 45px; padding: 20px 0px; }
+  .sig4 { font-family: 'Reenie Beanie'; font-size: 55px; line-height: 45px; }
+  .sig5 { font-family: 'Ma Shan Zheng'; font-size: 55px; line-height: 45px; padding: 20px 0px; }
+  .sig6 { font-family: 'Rouge Script'; font-size: 55px; line-height: 45px; padding: 20px 0px; }
+  .sig7 { font-family: 'League Script'; font-size: 55px; line-height: 45px; padding: 20px 0px; }
+  .sig8 { font-family: 'Miss Fajardose'; font-size: 55px; line-height: 45px; padding: 20px 0px; }
+  
+  /************ COLOR CHANGES ************/
+  
+  /***** phtocard1 *****/ 
+  
+  #photocard1 .ms-card-sig { background: linear-gradient(141deg, rgba(147,41,30,.5) 0%, rgba(237,33,58,.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
+  /***** phtocard2 *****/
+  
+  #photocard2 .ms-card-sig { background: linear-gradient(141deg, rgba(229,93,135,.5) 0%, rgba(95,195,228,.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
+  /***** phtocard3 *****/
+  
+  #photocard3 .ms-card-sig { background: linear-gradient(141deg, rgba(229,93,135,.5) 0%, rgba(95,195,228,.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /***** phtocard4 *****/
+  
+  #photocard4 .ms-card-sig { background: linear-gradient(141deg, rgba(229,93,135,.5) 0%, rgba(95,195,228,.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
