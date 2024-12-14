@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Takemymoney</title>
+  <link rel="stylesheet" href="../static/css/style_login.css">
+</head>
+<body>
+  <section>
+    
+    <div class="signin">
+      <div class="content">
+        <h2>Sign In</h2>
+        <div class="form">
+
+            <div class="inputBox">
+                <input type="text" id="username" name="username" required>
+                <i>Username</i>
+            </div>
+            <div class="inputBox">
+                <input type="password" id="password" name="password" required>
+                <i>Password</i>
+            </div>
+            <div class="links">
+                <a href="#">Forgot Password</a>
+                <a href="/register">Signup</a>
+            </div>
+            <div class="inputBox">
+                <input type="submit" id="loginButton" value="Login">
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
+
+<script>
+    document.getElementById("loginButton").addEventListener("click", async (event) => {
+        event.preventDefault(); // 防止按下按鈕時頁面刷新
+
+        // 獲取用戶輸入的資料
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // 檢查輸入
+        if (!username || !password) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        // 使用 fetch 提交資料
+        try {
+            const response = await fetch("/check_user_login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            // 處理後端返回的結果
+            if (response.ok) {
+                const result = await response.json();
+                window.location.href = `/`; // 替換為你的 Dashboard URL
+            } else {
+                const error = await response.json();
+                alert("Login failed: " + error.message);
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("An error occurred while logging in.");
+        }
+    });
+
+</script>
