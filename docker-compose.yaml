@@ -1,36 +1,46 @@
 version: '3.8'
+
 services:
-  web:
-    build: .
-    container_name: flask_app
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
     ports:
       - "5000:5000"
-    # env_file 可以放環境變數（.env）或直接在 environment 中寫死
-    # 若使用 python-dotenv 套件，也可在您的 Flask 入口檔讀取
-    # env_file:
-    #   - .env
-    environment:
-      # 這些環境變數僅做參考，實際可以視需求替換
-      - FLASK_ENV=development
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASSWORD=root_password
-      - DB_NAME=my_database
-    volumes:
-      - .:/app
     depends_on:
-      - db
+      - mysql
+    networks:
+      - app_network
 
-  db:
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./app/templates:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    networks:
+      - app_network
+
+  mysql:
     image: mysql:8.0
-    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=root_password
-      - MYSQL_DATABASE=my_database
-    volumes:
-      - db_data:/var/lib/mysql
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
 
 volumes:
-  db_data:
+  mysql_data:

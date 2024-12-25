@@ -1,23 +1,23 @@
-# 使用官方 Python 映像檔
+# 使用 Python 官方映像
 FROM python:3.9-slim
 
-# 為了避免某些編譯需求或系統工具需求，也可以在這裡做 apt-get install (看需求)
-# RUN apt-get update && apt-get install -y <some-deps>
+# 安裝必要的系統工具和庫
+RUN apt-get update && apt-get install -y \
+    gcc libmariadb-dev libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # 設定工作目錄
 WORKDIR /app
 
-# 複製 requirements.txt 進入容器
+# 複製需求文件並安裝依賴
 COPY requirements.txt .
-
-# 安裝 Python 套件
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 複製專案原始碼到容器中
+# 複製應用程式代碼
 COPY . /app
 
-# Expose 5000 port（Flask預設port），可依需求修改
+# 曝露 Flask 預設端口
 EXPOSE 5000
 
-# 設定容器啟動時要執行的指令，假設您的 Flask app 入口是 app.py
-CMD ["python", "app.py"]
+# 啟動 Flask 應用
+CMD ["python", "run.py"]
