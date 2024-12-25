@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    # env_file 可以放環境變數（.env）或直接在 environment 中寫死
+    # 若使用 python-dotenv 套件，也可在您的 Flask 入口檔讀取
+    # env_file:
+    #   - .env
+    environment:
+      # 這些環境變數僅做參考，實際可以視需求替換
+      - FLASK_ENV=development
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=my_database
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=my_database
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
