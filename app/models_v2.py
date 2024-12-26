@@ -1,8 +1,8 @@
 from .extensions import db
 import bcrypt
 from datetime import datetime
+# import uuid
 
-# User Table
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -16,7 +16,8 @@ class User(db.Model):
     role = db.Column(db.Enum('user', 'admin', name='user_roles'), default='user')
     profile_image = db.Column(db.String(255), nullable=True)
 
-    favorites = db.relationship('UserFavorites', back_populates='user', lazy=True)
+    favorites = db.relationship('UserFavorites', backref='user', lazy=True)
+    # is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     def __init__(self, username, email, password, cn=None, role='user', profile_image=None):
         self.username = username
@@ -42,18 +43,19 @@ class User(db.Model):
         """轉換為字典，敏感信息可選擇是否包含"""
         user_data = {
             "id": self.id,
+            # "uuid": self.uuid,
             "username": self.username,
             "email": self.email,
             "cn": self.cn,
             "role": self.role,
             "profile_image": self.profile_image,
+            # "is_active": self.is_active,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
         }
         if include_sensitive:
             user_data["password_hash"] = self.password_hash
         return user_data
-
 
 # IP Table
 class IP(db.Model):
@@ -66,15 +68,6 @@ class IP(db.Model):
 
     # Relationships
     characters = db.relationship('IPCharacter', back_populates='ip')
-
-    def to_dict(self):
-        return {
-            "ip_id": self.ip_id,
-            "ip_name": self.ip_name,
-            "description": self.description,
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S") if self.created_at else None,
-            "updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S") if self.updated_at else None
-        }
 
 
 # IP Characters Table
@@ -90,16 +83,6 @@ class IPCharacter(db.Model):
     # Relationships
     ip = db.relationship('IP', back_populates='characters')
     merch_items = db.relationship('Merch', back_populates='character')
-
-    def to_dict(self):
-        return {
-            "char_id": self.char_id,
-            "char_name": self.char_name,
-            "ip_id": self.ip_id,
-            "description": self.description,
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S") if self.created_at else None,
-            "updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S") if self.updated_at else None
-        }
 
 
 # Merch Table
@@ -131,6 +114,7 @@ class Merch(db.Model):
         self.image_path = image_path
         self.release_at = release_at
 
+    # Define to_dict method
     def to_dict(self):
         return {
             "merch_id": self.merch_id,
@@ -172,7 +156,7 @@ class Tag(db.Model):
     merch_tags = db.relationship('MerchTags', back_populates='tag')
 
 
-# Merch Tags Table
+# Merch Tags Table (Many-to-Many between Merch and Tags)
 class MerchTags(db.Model):
     __tablename__ = 'merch_tags'
     merch_id = db.Column(db.Integer, db.ForeignKey('merch.merch_id'), primary_key=True)
