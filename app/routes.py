@@ -85,8 +85,6 @@ def create_user():
         print(f"Error: {e}")  # 打印詳細錯誤日誌
         return jsonify({"status": "fail", "message": "Internal Server Error"}), 500
 
-
-
-
-
-
+@main_routes.route('/health', methods=['GET'])
+def health():
+    return {'status': 'healthy'}, 200
