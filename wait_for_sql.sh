@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 等待 MySQL 容器健康檢查通過
+# Wait MySQL healthcheck to be healthy before starting other services
 MYSQL_CONTAINER_NAME="mysql"
 TIMEOUT=60
 INTERVAL=5
