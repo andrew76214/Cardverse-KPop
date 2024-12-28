@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photocard Grid</title>
+    <link rel="stylesheet" href="../static/css/new_card.css" />
+    <link rel="stylesheet" href="../static/css/form_style.css" />
+    <script src="../static/js/card.js"></script>
+</head>
+<body>
+    <form id="photoForm">
+        <div class="form-row">
+            <label>Group Name: <input type="text" id="groupName" required></label>
+            <label>Name: <input type="text" id="name" required></label>
+            <label>Source: <input type="text" id="source" required></label>
+			<label>Note: <input type="text" id="note" required></label>
+        </div>
+        <div class="form-row">
+			
+            <label>Upload Photo: <input type="file" id="photoUpload" accept="image/*" required></label>
+            <button type="submit">Submit</button>
+        </div>
+
+    </form>
+    <div class="ms-card-grid"></div>
+</body>
+</html>
