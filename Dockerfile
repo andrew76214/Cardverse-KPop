@@ -24,4 +24,4 @@ COPY wait_for_sql.sh /usr/local/bin/wait_for_sql.sh
 RUN chmod +x /usr/local/bin/wait_for_sql.sh
 
 # 啟動 Flask 應用
-CMD ["wait_for_sql.sh", "mysql:3306", "--", "python", "run.py"]
+CMD ["sh", "wait_for_sql.sh", "python", "run.py"]

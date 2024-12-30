@@ -227,9 +227,12 @@ sudo apt-get install tree
 │           ├── 601c51ce752d_add_column_cn_to_users.cpython-39.pyc
 │           └── e7628200c5af_change_column_password_to_users.cpython-39.pyc
 ├── nginx.conf
+├── nginx_https.conf
 ├── README.md
 ├── requirements.txt
-└── run.py
+├── run.py
+├── setup-letsencrypt.sh
+└── wait_for_sql.sh
 ```
 
 ---
