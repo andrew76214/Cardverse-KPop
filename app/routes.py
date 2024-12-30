@@ -48,33 +48,34 @@ def check_user_login():
     else:
         return jsonify({"status": "fail", "message": "Invalid username or password"}), 401
 
-
-
 @main_routes.route('/create_user', methods=['POST'])
 def create_user():
     try:
-        # 嘗試接收 JSON 資料
-        data = request.get_json()
-
+        # 嘗試從 JSON 或查詢字串中獲取資料
+        data = request.get_json() or request.args
+        # app.logger.info(f"Received data: {data}")
+        
         # 檢查資料完整性
         if not data:
             return jsonify({"status": "fail", "message": "No input data provided"}), 400
 
         username = data.get("username")
-        password = data.get("password")  # 必須處理密碼！
+        password = data.get("password")
         email = data.get("email")
         cn = data.get("cn")
 
         if not username or not password or not email or not cn:
-            return jsonify({"status": "fail", "message": "All fields are required"}), 400
+            return jsonify({"status": "fail", "message": "All fields are required"}), 499
 
         # 檢查用戶是否已存在
         user = User.query.filter_by(username=username).first()
         if user:
             return jsonify({"status": "fail", "message": "User already exists"}), 409
 
-        # 新建用戶 (記得處理密碼加密)
+        # 新建用戶
+        # hashed_password = generate_password_hash(password, method='sha256')
         new_user = User(username=username, password=password, email=email, cn=cn)
+
         # 保存至資料庫
         db.session.add(new_user)
         db.session.commit()
@@ -82,8 +83,9 @@ def create_user():
         return jsonify({"status": "success", "message": "User created successfully"}), 201
 
     except Exception as e:
-        print(f"Error: {e}")  # 打印詳細錯誤日誌
+        print(f"Error: {e}")
         return jsonify({"status": "fail", "message": "Internal Server Error"}), 500
+
 
 @main_routes.route('/health', methods=['GET'])
 def health():
