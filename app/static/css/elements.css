@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.filter-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section {
+    margin-bottom: 1rem;
+}
+
+.filter-section h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-options button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.filter-options button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.filter-options button:hover {
+    background-color: #e9ecef;
+}
+
+.actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.actions button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.actions button.apply {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.actions button.apply:hover {
+    background-color: #218838;
+}
+
+.actions button.reset {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.actions button.reset:hover {
+    background-color: #c82333;
+}

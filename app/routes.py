@@ -30,9 +30,15 @@ def logout():
 def cardDashboard():
     return render_template('landing.html')
 
+@main_routes.route('/wishList', methods=['GET', 'POST'])
+def wishList():
+    return render_template('wishlist.html')
 @main_routes.route('/shop', methods=['GET', 'POST'])
 def shop():
     return render_template('generic.html')
+@main_routes.route('/elements', methods=['GET', 'POST'])
+def elements():
+    return render_template('elements.html')
 """
 user
 - 創建用戶
@@ -87,6 +93,9 @@ def create_user():
         print(f"Error: {e}")  # 打印詳細錯誤日誌
         return jsonify({"status": "fail", "message": "Internal Server Error"}), 500
 
+@main_routes.route('/health', methods=['GET'])
+def health():
+    return {'status': 'healthy'}, 200
 """
 IP
 - 創建IP

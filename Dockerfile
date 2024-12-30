@@ -19,5 +19,9 @@ COPY . /app
 # 曝露 Flask 預設端口
 EXPOSE 5000
 
+# 等待 MySQL 準備完成的腳本
+COPY wait_for_sql.sh /usr/local/bin/wait_for_sql.sh
+RUN chmod +x /usr/local/bin/wait_for_sql.sh
+
 # 啟動 Flask 應用
-CMD ["python", "run.py"]
+CMD ["sh", "wait_for_sql.sh", "python", "run.py"]
