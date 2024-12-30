@@ -30,9 +30,11 @@ def logout():
 def cardDashboard():
     return render_template('landing.html')
 
+@main_routes.route('/shop', methods=['GET', 'POST'])
+def shop():
+    return render_template('generic.html')
 """
 user
-12/15: 
 - 創建用戶
 - 檢查用戶登錄
 """
@@ -87,7 +89,6 @@ def create_user():
 
 """
 IP
-12/25:Merry Christmas
 - 創建IP
 - 獲取所有IP
 """
@@ -136,7 +137,6 @@ def get_all_ip():
 """
 
 Merch
-12/15
 - 獲取所有Merch
 """
 
