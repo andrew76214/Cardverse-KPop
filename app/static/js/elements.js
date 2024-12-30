@@ -7,8 +7,7 @@ const groupToNames = {
     'aespa': ['Karina', 'Giselle', 'Winter', 'NingNing'],
     'NCT DREAM': ['Mark', 'Renjun', 'Jeno', 'Haechan', 'Jaemin', 'Chenle', 'Jisung'],
     'NCT 127': ['角色7', '角色8','Mark', 'Haechan'],
-    'Y': ['角色10', '角色11'],
-    'Z': ['角色12', '角色13']
+    'Y': ['角色10', '角色11']
 };
 
 // 點擊 Group Name 時更新 Name 按鈕
