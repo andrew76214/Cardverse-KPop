@@ -144,11 +144,26 @@ def get_all_ip():
         ip_list = IP.query.all()
         ip_data = [ip.to_dict() for ip in ip_list]
 
-        return jsonify({"status": "success", "ip": ip_data}), 200
+        return jsonify({"status": "success", "ip_data": ip_data}), 200
     except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500
 """
+IP_characters
+"""
+@main_routes.route('/get_character_by_ipid', methods=['GET'])
+def get_character_by_ipid():
+    try:
+        ip_id = request.args.get('ip_id')
+        if not ip_id:
+            return jsonify({"status": "fail", "message": "ip_id is required"}), 400
 
+        character_list = IPCharacter.query.filter_by(ip_id=ip_id).all()
+        character_data = [char.to_dict() for char in character_list]
+        return jsonify({"status": "success", "characters": character_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+"""
 Merch
 - 獲取所有Merch
 """
@@ -168,4 +183,22 @@ def get_all_merch():
     except Exception as e:
         # Handle unexpected errors
         return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/get_merch_by_id', methods=['POST'])
+def get_merch_by_id():
+    try:
+        data = request.json
+        ip_id = data.get('ip_id')
+        character_ids = data.get('character_ids', [])
+
+        # 模擬處理數據
+        print(f"Received IP ID: {ip_id}")
+        print(f"Received Character IDs: {character_ids}")
+
+        # 返回成功響應
+        return jsonify({"status": "success", "message": "Data processed successfully"}), 200
+    except Exception as e:
+        # 返回錯誤響應
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
 
