@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             groupOptions.appendChild(button);
         });
     }
-
     // 使用 fetch 撈取角色資料
     async function fetchCharactersByIpId(ipId) {
         try {
