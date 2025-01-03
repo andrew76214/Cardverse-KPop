@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, session, jsonify
+from flask import Blueprint, render_template, request, redirect, session, jsonify, send_file
 from .models import *
 from .extensions import db
+import os
+import mimetypes
 
 main_routes = Blueprint('main_routes', __name__)
 
@@ -143,6 +145,18 @@ def get_all_ip():
         return jsonify({"status": "success", "ip_data": ip_data}), 200
     except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/get_ip_by_id', methods=['GET'])
+def get_ip_by_id():
+    ip_id = request.args.get('ip_id')
+    if not ip_id:
+        return jsonify({"status": "fail", "message": "ip_id is required"}), 400
+
+    ip = IP.query.filter_by(ip_id=ip_id).first()
+    if not ip:
+        return jsonify({"status": "fail", "message": "IP not found"}), 404
+
+    return jsonify({"status": "success", "ip_data": ip.to_dict()}), 200
 """
 IP_characters
 """
@@ -198,3 +212,40 @@ def get_merch_by_id():
         return jsonify({"status": "fail", "message": str(e)}), 500
 
 
+"""
+images
+"""
+# 設定圖片存放的目錄
+IMAGE_FOLDER = os.path.join(os.getcwd(), "app/static/images/card")
+
+# 確保圖片目錄存在
+if not os.path.exists(IMAGE_FOLDER):
+    os.makedirs(IMAGE_FOLDER)
+
+@main_routes.route('/get_image', methods=['GET'])
+def get_image():
+    """
+    動態獲取圖片 API
+    Query Params:
+    - image_path: 前端提供的圖片相對路徑 (e.g., "images/card/miku_10c_beforetraining.jpg")
+    """
+    try:
+        # 從查詢參數中獲取圖片路徑
+        image_path = request.args.get('image_path')
+        if not image_path:
+            return jsonify({"status": "fail", "message": "No image_path provided"}), 400
+
+        # 確定圖片的完整路徑
+        full_image_path = os.path.join(IMAGE_FOLDER, image_path)
+        print(f"Iamge Folder Path: {IMAGE_FOLDER}")
+        print(f"Requested Image Path: {full_image_path}")
+
+        # 檢查圖片是否存在
+        if not os.path.isfile(full_image_path):
+            return jsonify({"status": "fail", "message": "Image not found"}), 404
+
+        # 返回圖片文件
+        # return send_file(full_image_path, mimetype='image/jpeg')  # 根據實際圖片類型設置 mimetype
+        return send_file(full_image_path, mimetype=mimetypes.guess_type(full_image_path)[0])
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500

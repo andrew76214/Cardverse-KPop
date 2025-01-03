@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nameOptions = document.querySelector('.name-options');
     const resetButton = document.querySelector('.reset');
     const submitButton = document.querySelector('.apply');
+    const allButton = document.querySelector('.all-btn');
+    const imagesContainer = document.querySelector('.images');
     const selectedCharacters = new Set();
     var selectedIPID = 0;
 
@@ -158,8 +160,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-
-
     // 重置按鈕：清空選擇
     resetButton.addEventListener('click', () => {
         document.querySelectorAll('.group-options button').forEach(btn => btn.classList.remove('active'));
@@ -167,4 +167,119 @@ document.addEventListener("DOMContentLoaded", async () => {
         selectedIPID = 0; // 清空選擇的 IP ID
         selectedCharacters.clear();
     });
+
+    // "All" 按鈕點擊事件
+    allButton.addEventListener('click', async () => {
+        try {
+            console.log("Fetching all merchandise...");
+            
+            // 發送 GET 請求到後端
+            const response = await fetch('/get_all_merch', { method: 'GET' });
+            
+            if (response.ok) {
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    console.log("Received merchandise data:", result.merchandise);
+
+                    // 顯示所有商品圖片
+                    displayAllMerchImages(result.merchandise);
+                } else {
+                    console.error("Failed to fetch merchandise:", result.message);
+                    alert(`無法獲取商品資料：${result.message}`);
+                }
+            } else {
+                console.error("HTTP error:", response.status);
+                alert("無法獲取商品資料，請稍後重試！");
+            }
+        } catch (error) {
+            console.error("Error occurred while fetching merchandise:", error);
+            alert("獲取商品資料時發生錯誤！");
+        }
+    });
+
+    // 顯示所有商品圖片的函數
+    function displayAllMerchImages(merchandise) {
+        imagesContainer.innerHTML = ''; // 清空圖片容器
+        console.log("Displaying all merchandise...");
+        console.log("Merchandise:", merchandise);
+
+        merchandise.forEach(item => {
+            addPhotoCard(item);
+        });
+    }
+    
+    // 添加圖片卡片
+    async function addPhotoCard(item) {
+        const { char_id, ip_id, image_path, name, price, release_at, merch_id ,path} = item;
+        // const photoURL = image_path;
+        const photoURL = `/get_image?image_path=${encodeURIComponent(image_path)}`;
+        // const photoURL = `../images/card/${image_path}`;
+        console.log("Generated photoURL:", photoURL);
+        const ipData = {};
+        try {
+            const response = await fetch(`/get_ip_by_id?ip_id=${ip_id}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.status === "success") {
+                    ipData = result.ip_data || [];
+                    console.log("IP data:", ipData);
+                } else {
+                    console.error("Failed to fetch IP data:", result.message);
+                }
+            } else {
+                console.error("HTTP error:", response.status);
+            }
+        } catch (err) {}
+        const groupName = ipData.ip_name;
+        const cardHTML = `
+            <div class="ms-card-wrapper">
+                <div class="ms-card-inside">
+                    <div class="ms-card-front">
+                        <div class="ms-card-front">
+                            <img class ="ms-card-front-img" src="${photoURL}" alt="Card Image">
+                        </div>
+                        <div class="ms-tarot-gradient">
+                            <div class="ms-tarot-border">
+                                <div class="ms-tarot-title"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-card-back">
+                        <div class="ms-tarot-border">
+                            <div class="ms-tarot-info">
+                                ${groupName} <br>
+                                ${name} <br>
+                                ${path} <br>
+                                <button class="add-button" data-name="${name}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        imagesContainer.insertAdjacentHTML('beforeend', cardHTML);
+        ensureFourPerRow();
+
+        // 添加按鈕點擊事件
+        const addButton = imagesContainer.querySelector(`.add-button[data-name="${name}"]`);
+        addButton.addEventListener('click', () => {
+            alert(`Added ${name} to your list!`);
+        });
+    }
+
+    // 設置四列布局
+    function ensureFourPerRow() {
+        imagesContainer.style.display = 'grid';
+        imagesContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        imagesContainer.style.gap = '5px';
+    }
+
+
 });
