@@ -7,4 +7,4 @@ python_bcrypt==0.3.2
 SQLAlchemy==2.0.36
 pymysql==1.1.1
 cryptography
-bcrypt
+bcrypt==4.2.1
