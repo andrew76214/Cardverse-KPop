@@ -215,13 +215,17 @@ def get_merch_by_id():
         print(f"Received Character IDs: {character_ids}")
 
         # 模擬查詢數據庫
-        merch_list = Merch.query.filter_by(ip_id=ip_id).all()
-        merch_list = Merch.query.filter(
-                        and_(
-                            Merch.ip_id == ip_id,
-                            Merch.char_id.in_(character_ids)
-                        )
-                    ).all()
+        if not ip_id:
+            return jsonify({"status": "fail", "message": "ip_id is required"}), 400
+        elif not character_ids:
+            merch_list = Merch.query.filter_by(ip_id=ip_id).all()
+        else:
+            merch_list = Merch.query.filter(
+                            and_(
+                                Merch.ip_id == ip_id,
+                                Merch.char_id.in_(character_ids)
+                            )
+                        ).all()
         merch_data = [merch.to_dict() for merch in merch_list]
 
         return jsonify({"status": "success", "merchandise": merch_data}), 200
@@ -353,3 +357,47 @@ def get_image():
         return send_file(full_image_path, mimetype=mimetypes.guess_type(full_image_path)[0])
     except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500
+    
+"""
+search_mearch(user_favorite version)
+"""
+@main_routes.route('/get_user_favorites_from_merch', methods=['GET'])
+def get_user_favorites_from_merch():
+    try:
+        print(session)
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "error", "message": "User not logged in"}), 401
+        # 使用 JOIN 查詢 user_favorites 與 merch 的關聯資料
+        favorites = db.session.query(Merch).join(UserFavorites).filter(UserFavorites.user_id == user_id).all()
+
+        # 將結果轉換為 JSON 格式
+        result = [merch.to_dict() for merch in favorites]
+        return jsonify({"status": "success", "merchandise": result}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+@main_routes.route('/get_merch_by_id_user_favorite_ver', methods=['POST'])
+def get_merch_by_id_user_favorite_ver():
+    try:
+        user_id = session.get('user_id')
+        # 從請求的 JSON 數據中獲取 ip_id 和 char_id
+        data = request.json
+        ip_id = data.get('ip_id')
+        character_ids = data.get('character_ids', [])
+
+        # 檢查參數是否存在
+        if not ip_id:
+            return jsonify({"status": "error", "message": "Missing ip_id"}), 400
+
+        # 查詢用戶收藏的商品資料，並篩選特定角色
+        favorites = db.session.query(Merch).join(UserFavorites).filter(
+            UserFavorites.user_id == user_id,
+            Merch.char_id.in_(character_ids)
+        ).all()
+
+        # 將查詢結果轉換為 JSON 格式
+        result = [merch.to_dict() for merch in favorites]
+        return jsonify({"status": "success", "merchandise": result}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500

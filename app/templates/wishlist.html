@@ -4,17 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photocard Grid</title>
-    <link rel="stylesheet" href="../static/css/new_card.css" />
-    <link rel="stylesheet" href="../static/css/form_style.css" />
-    <script src="../static/js/card.js"></script>
+    <!-- <link rel="stylesheet" href="../static/css/new_card.css" /> -->
+    <!-- <link rel="stylesheet" href="../static/css/form_style.css" /> -->
+    <!-- <script src="../static/js/card.js"></script> -->
+    <link rel="stylesheet" href="../static/css/elements.css" />
 </head>
 <body>
+    <nav class="navbar">
+        <ul class="links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/cardDashboard">虛擬收藏冊</a></li>
+            <li><a href="/shop">交流及周邊交易區</a></li>
+            <li><a href="/elements">小卡圖鑑</a></li>
+            <li><a href="/wishList">願望清單</a></li>
+        </ul>
+    </nav>
+
+    <div class="filter-container">
+        <div class="filter-section">
+            <h3>IP Name</h3>
+            <div class="filter-options group-options">
+                <!-- <button data-group="xxx">xxx</button> -->
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Character Name</h3>
+            <div class="filter-options name-options">
+                <!-- 角色按鈕將在這裡動態生成 -->
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="apply">使用</button>
+            <button class="reset">重設</button>
+            <button class="all-btn">顯示所有願望</button>
+        </div>
+    </div>
     <form id="photoForm">
         <div class="form-row">
-            <label>Group Name: <input type="text" id="groupName" required></label>
-            <label>Name: <input type="text" id="name" required></label>
-            <label>Source: <input type="text" id="source" required></label>
-			<label>Note: <input type="text" id="note" required></label>
+            <!-- IP -->
+            <label>IP Name <input type="text" id="ipName" required></label> 
+            <!-- Char Name -->
+            <label>Name <input type="text" id="name" required></label>
+            <!-- Path -->
+            <label>Path <input type="text" id="source" required></label>
         </div>
         <div class="form-row">
 			
@@ -23,6 +57,73 @@
         </div>
 
     </form>
-    <div class="ms-card-grid"></div>
+    <div class="image-container">
+        <h3>願望清單</h3>
+        <div class="images">
+            <!-- 搜尋結果的圖片會在這裡顯示 -->
+        </div>
+    </div>
+    <script src="../static/js/wishlist.js"></script>
 </body>
 </html>
+
+<script>
+    document.getElementById('photoForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // 阻止表單的預設提交行為
+    
+        // 獲取表單元素
+        const ipName = document.getElementById('ipName').value;
+        const name = document.getElementById('name').value;
+        const source = document.getElementById('source').value;
+        const note = document.getElementById('note').value;
+        const photoUpload = document.getElementById('photoUpload').files[0];
+    
+        if (!photoUpload) {
+            alert('Please upload a photo!');
+            return;
+        }
+    
+        // 構造 FormData 對象
+        const formData = new FormData();
+        formData.append('ipName', ipName);
+        formData.append('name', name);
+        formData.append('source', source);
+        formData.append('note', note);
+        formData.append('photo', photoUpload);
+    
+        try {
+            // 發送請求到後端 API
+            const response = await fetch('/create_mrech', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                alert('Submission successful!');
+                console.log('Server response:', result);
+                // 你可以在這裡進一步處理結果，例如刷新圖片列表等
+            } else {
+                const error = await response.text();
+                alert(`Submission failed: ${error}`);
+                console.error('Error response:', error);
+            }
+        } catch (err) {
+            console.error('Network or server error:', err);
+            alert('An error occurred while submitting the form.');
+        }
+    });
+</script>
+<script>
+    // 獲取當前頁面的 URL 路徑
+    const currentPath = window.location.pathname;
+
+    // 遍歷所有的導航鏈接
+    document.querySelectorAll('.navbar .links a').forEach(link => {
+        // 如果鏈接的 href 與當前路徑匹配，添加 active 類
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+    

@@ -178,3 +178,38 @@
   
   #photocard4 .ms-card-sig { background: linear-gradient(141deg, rgba(229,93,135,.5) 0%, rgba(95,195,228,.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   
+  /* 工具列的樣式 */
+.navbar {
+  background-color: #333;
+  padding: 10px 15px;
+}
+
+.navbar .links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 15px;
+}
+
+.navbar .links li {
+  display: inline;
+}
+
+.navbar .links a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.navbar .links a:hover {
+  text-decoration: underline;
+}
+
+/* 當前頁面鏈接樣式 */
+.navbar .links a.active {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
