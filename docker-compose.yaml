@@ -20,7 +20,7 @@ services:
     networks:
       - app_network
     environment:
-      - DATABASE_URI=mysql+pymysql://user:tsao0120@mysql:3308/takemymoney
+      - DATABASE_URI=mysql+pymysql://user:tsao0120@mysql:3306/takemymoney
 
   frontend:
     image: nginx:alpine

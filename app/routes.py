@@ -3,7 +3,7 @@ from .models import *
 from .extensions import db
 import os
 import mimetypes
-
+from sqlalchemy import and_
 main_routes = Blueprint('main_routes', __name__)
 
 @main_routes.route('/')
@@ -11,7 +11,8 @@ def index():
     print(session)
     if 'username' in session:
         user = User.query.filter_by(username=session['username']).first()
-        print(user)
+        # print(user)
+        # userdata = user.to_dict()
         return render_template('index.html', user=user)
     return render_template('index.html', user=None)
 
@@ -53,7 +54,11 @@ def check_user_login():
     password = data.get("password")
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
+        session['user_id'] = user.id
         session['username'] = user.username
+        session['email'] = user.email
+        session['cn'] = user.cn
+        session['role'] = user.role
         print(session)
         # 返回用戶的完整 JSON 資料
         return jsonify(user.to_dict())
@@ -209,10 +214,62 @@ def get_merch_by_id():
         print(f"Received IP ID: {ip_id}")
         print(f"Received Character IDs: {character_ids}")
 
-        # 返回成功響應
-        return jsonify({"status": "success", "message": "Data processed successfully"}), 200
+        # 模擬查詢數據庫
+        merch_list = Merch.query.filter_by(ip_id=ip_id).all()
+        merch_list = Merch.query.filter(
+                        and_(
+                            Merch.ip_id == ip_id,
+                            Merch.char_id.in_(character_ids)
+                        )
+                    ).all()
+        merch_data = [merch.to_dict() for merch in merch_list]
+
+        return jsonify({"status": "success", "merchandise": merch_data}), 200
     except Exception as e:
         # 返回錯誤響應
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+"""
+User_Favorites
+"""
+@main_routes.route('/get_user_favorites', methods=['GET'])
+def get_user_favorites():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        favorites_list = UserFavorites.query.filter_by(user_id=user_id).all()
+        favorites_data = [fav.to_dict() for fav in favorites_list]
+
+        return jsonify({"status": "success", "favorites": favorites_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/create_user_favorite', methods=['POST'])
+def create_user_favorite():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        data = request.get_json()
+        merch_id = data.get('merch_id')
+        if not merch_id:
+            return jsonify({"status": "fail", "message": "merch_id is required"}), 400
+
+        # 檢查是否已存在
+        favorite = UserFavorites.query.filter_by(user_id=user_id, merch_id=merch_id).first()
+        if favorite:
+            return jsonify({"status": "fail", "message": "Favorite already exists"}), 409
+
+        # 新建收藏
+        new_favorite = UserFavorites(user_id=user_id, merch_id=merch_id)
+        db.session.add(new_favorite)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Favorite created successfully"}), 201
+    except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500
 
 

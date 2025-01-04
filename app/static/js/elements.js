@@ -144,7 +144,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.log("Server response:", result);
     
                 if (result.status === "success") {
-                    alert("提交成功！");
+                    console.log("Received merchandise data:", result.merchandise);
+                    imagesContainer.innerHTML = ''; // 清空圖片卡片
+                    result.merchandise.forEach(item => {
+                        addPhotoCard(item);
+                    });
                 } else {
                     alert(`提交失敗: ${result.message}`);
                 }
@@ -163,6 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     resetButton.addEventListener('click', () => {
         document.querySelectorAll('.group-options button').forEach(btn => btn.classList.remove('active'));
         nameOptions.innerHTML = ''; // 清空 Name 按鈕
+        imagesContainer.innerHTML = ''; // 清空圖片卡片
         selectedIPID = 0; // 清空選擇的 IP ID
         selectedCharacters.clear();
     });
@@ -244,11 +249,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <div class="ms-card-front">
                             <img class ="ms-card-front-img" src="${photoURL}" alt="Card Image">
                         </div>
-                        <div class="ms-tarot-gradient">
-                            <div class="ms-tarot-border">
-                                <div class="ms-tarot-title"></div>
-                            </div>
-                        </div>
                     </div>
                     <div class="ms-card-back">
                         <div class="ms-tarot-border">
@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 ${groupName} <br>
                                 ${name} <br>
                                 ${path} <br>
-                                <button class="add-button" data-name="${name}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>
+                                <button class="add-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>
                             </div>
                         </div>
                     </div>
@@ -268,15 +268,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // 添加按鈕點擊事件
         const addButton = imagesContainer.querySelector(`.add-button[data-name="${name}"]`);
-        addButton.addEventListener('click', () => {
-            alert(`Added ${name} to your list!`);
+        addButton.addEventListener('click', async () => {
+            const merchId = addButton.getAttribute('data-merch-id');
+            console.log(`Sending merch_id ${merchId} to the backend...`);
+    
+            try {
+                const response = await fetch('/create_user_favorite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ merch_id: merchId }),
+                });
+    
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        alert(`Added ${name} to your list!`);
+                    } else {
+                        alert(`Failed to add ${name}: ${result.message}`);
+                    }
+                } else {
+                    alert(`HTTP error: ${response.status}`);
+                }
+            } catch (err) {
+                console.error('Error while adding item:', err);
+                alert('Failed to add item to the list.');
+            }
         });
     }
 
-    // 設置四列布局
+    // 設置四列布局->6感覺比較好看
     function ensureFourPerRow() {
         imagesContainer.style.display = 'grid';
-        imagesContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        imagesContainer.style.gridTemplateColumns = 'repeat(6, 1fr)';
         imagesContainer.style.gap = '5px';
     }
 
