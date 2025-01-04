@@ -30,7 +30,7 @@ services:
       - ./app/static:/usr/share/nginx/html/static
     ports:
       - "6666:80"
-      - "443:443"
+      - "8443:443"
     depends_on:
       mysql:
         condition: service_healthy
