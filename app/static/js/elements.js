@@ -292,7 +292,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         imagesContainer.insertAdjacentHTML('beforeend', cardHTML);
         ensureFourPerRow();
 
-        // // 添加按鈕點擊事件
         // const addButton = imagesContainer.querySelector(`.add-button`);
         // console.log("add"+addButton); // 如果是 null，按鈕可能未加載成功或選取器有問題
         // addButton.addEventListener('click', async () => {
@@ -364,87 +363,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// // 父元素 imagesContainer 上綁定事件
-// imagesContainer.addEventListener('click', async (event) => {
-//     // 檢查是否點擊了 "add-button"
-//     if (event.target.classList.contains('add-button')) {
-//         const addButton = event.target;
-//         const merchId = addButton.getAttribute('data-merch-id');
-//         console.log(`Add：Sending merch_id ${merchId} to the backend...`);
-
-//         try {
-//             const response = await fetch('/create_user_favorite', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ merch_id: merchId }),
-//             });
-
-//             if (response.ok) {
-//                 const result = await response.json();
-//                 if (result.status === 'success') {
-//                     alert(`Added ${addButton.getAttribute('data-name')} to your list!`);
-//                     // 變更按鈕為 delete-button
-//                     addButton.textContent = '-';
-//                     addButton.classList.remove('add-button');
-//                     addButton.classList.add('delete-button');
-//                     addButton.style.backgroundColor = 'red';
-//                     addButton.disabled = true; // 防止重複觸發
-                    
-//                     // 停止事件冒泡
-//                     // event.stopPropagation();
-//                 } else {
-//                     alert(`Failed to add ${addButton.getAttribute('data-name')}: ${result.message}`);
-//                 }
-//             } else {
-//                 alert(`HTTP error: ${response.status}`);
-//             }
-//         } catch (err) {
-//             console.error('Error while adding item:', err);
-//             alert('Failed to add item to the list.');
-//         }
-//     }
-
-//     // 檢查是否點擊了 "delete-button"
-//     else if (event.target.classList.contains('delete-button')) {
-//         const deleteButton = event.target;
-//         const merchId = deleteButton.getAttribute('data-merch-id');
-//         console.log(`Delete: Sending merch_id ${merchId} to the backend...`);
-
-//         try {
-//             const response = await fetch('/delete_user_favorite', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ merch_id: merchId }),
-//             });
-
-//             if (response.ok) {
-//                 const result = await response.json();
-//                 if (result.status === 'success') {
-//                     alert(`Deleted ${deleteButton.getAttribute('data-name')} from your list!`);
-//                     // 變更按鈕為 add-button
-//                     deleteButton.textContent = '+';
-//                     deleteButton.classList.remove('delete-button');
-//                     deleteButton.classList.add('add-button');
-//                     deleteButton.style.backgroundColor = 'green';
-//                     // deleteButton.disabled = true; // 防止重複觸發
-//                     // 停止事件冒泡
-//                     // event.stopPropagation();
-//                 } else {
-//                     alert(`Failed to delete ${deleteButton.getAttribute('data-name')}: ${result.message}`);
-//                 }
-//             } else {
-//                 alert(`HTTP error: ${response.status}`);
-//             }
-//         } catch (err) {
-//             console.error('Error while deleting item:', err);
-//             alert('Failed to delete item from the list.');
-//         }
-//     }
-// });
 let isProcessing = false;
 
 imagesContainer.addEventListener('click', async (event) => {

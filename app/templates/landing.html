@@ -9,6 +9,15 @@
     <script src="../static/js/card.js"></script>
 </head>
 <body>
+    <nav class="navbar">
+        <ul class="links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/cardDashboard">虛擬收藏冊</a></li>
+            <li><a href="/shop">交流及周邊交易區</a></li>
+            <li><a href="/elements">小卡圖鑑</a></li>
+            <li><a href="/wishList">願望清單</a></li>
+        </ul>
+    </nav>
     <form id="photoForm">
         <div class="form-row">
             <label>Group Name: <input type="text" id="groupName" required></label>
@@ -27,3 +36,16 @@
 </body>
 </html>
 
+<script>
+    // 獲取當前頁面的 URL 路徑
+    const currentPath = window.location.pathname;
+
+    // 遍歷所有的導航鏈接
+    document.querySelectorAll('.navbar .links a').forEach(link => {
+        // 如果鏈接的 href 與當前路徑匹配，添加 active 類
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+    
