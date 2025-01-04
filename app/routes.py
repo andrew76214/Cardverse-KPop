@@ -272,7 +272,50 @@ def create_user_favorite():
     except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500
 
+@main_routes.route('/get_user_favorite_by_id', methods=['GET'])
+def get_user_favorite_by_id():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
 
+        merch_id = request.args.get('merch_id')
+        if not merch_id:
+            return jsonify({"status": "fail", "message": "merch_id is required"}), 400
+
+        favorite = UserFavorites.query.filter_by(user_id=user_id, merch_id=merch_id).first()
+        if not favorite:
+            return jsonify({"status": "success", "is_favorite": False}), 200
+
+        return jsonify({"status": "success", "is_favorite": True}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+    
+    
+@main_routes.route('/delete_user_favorite', methods=['POST'])
+def delete_user_favorite():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        data = request.get_json()
+        merch_id = data.get('merch_id')
+        if not merch_id:
+            return jsonify({"status": "fail", "message": "merch_id is required"}), 400
+
+        # 查找收藏
+        favorite = UserFavorites.query.filter_by(user_id=user_id, merch_id=merch_id).first()
+        if not favorite:
+            return jsonify({"status": "fail", "message": "Favorite not found"}), 404
+
+        # 刪除收藏
+        db.session.delete(favorite)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Favorite deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
 """
 images
 """
