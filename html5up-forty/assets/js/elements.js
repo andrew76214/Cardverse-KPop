@@ -110,7 +110,7 @@ function addPhotoCard(photoURL, groupName, name, source) {
                             ${groupName} <br>
                             ${name} <br>
                             ${source} <br>
-                            <button class="add-button" data-name="${name}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>
+                            <button class="add-button" data-name="${name}" style="color: white; background-color: green; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>
                         </div>
                     </div>
                 </div>
@@ -123,7 +123,15 @@ function addPhotoCard(photoURL, groupName, name, source) {
     // 添加按鈕點擊事件
     const addButton = imagesContainer.querySelector(`.add-button[data-name="${name}"]`);
     addButton.addEventListener('click', () => {
-        alert(`Added ${name} to your list!`);
+        if (addButton.textContent === '+') {
+            addButton.textContent = '-';
+            addButton.style.backgroundColor = 'red';
+            alert(`Added ${name} to your list!`);
+        } else {
+            addButton.textContent = '+';
+            addButton.style.backgroundColor = 'green';
+            alert(`Removed ${name} from your list!`);
+        }
     });
 }
 
