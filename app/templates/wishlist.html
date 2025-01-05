@@ -44,11 +44,17 @@
     <form id="photoForm">
         <div class="form-row">
             <!-- IP -->
-            <label>IP Name <input type="text" id="ipName" required></label> 
+            <label><span class="required">* </span>IP Name <input type="text" id="ipName" required></label> 
             <!-- Char Name -->
-            <label>Name <input type="text" id="name" required></label>
+            <label><span class="required">* </span>Character Name <input type="text" id="charName" required></label>
+            <!-- Volumn -->
+            <label>Volume <input type="text" id="vol"></label>
+            <!-- Version name -->
+            <label>Version <input type="text" id="version"></label>
+            <!-- Release_at -->
+            <label>Release Date (YY/MM)<input type="text" id="releaseAt"></label>
             <!-- Path -->
-            <label>Path <input type="text" id="source" required></label>
+            <label>Path <input type="text" id="path"></label>
         </div>
         <div class="form-row">
 			
@@ -73,9 +79,11 @@
     
         // 獲取表單元素
         const ipName = document.getElementById('ipName').value;
-        const name = document.getElementById('name').value;
-        const source = document.getElementById('source').value;
-        const note = document.getElementById('note').value;
+        const charname = document.getElementById('charName').value;
+        const vol = document.getElementById('vol').value;
+        const version = document.getElementById('version').value;
+        const releaseAt = document.getElementById('releaseAt').value;
+        const path = document.getElementById('path').value;
         const photoUpload = document.getElementById('photoUpload').files[0];
     
         if (!photoUpload) {
@@ -86,14 +94,17 @@
         // 構造 FormData 對象
         const formData = new FormData();
         formData.append('ipName', ipName);
-        formData.append('name', name);
-        formData.append('source', source);
-        formData.append('note', note);
+        formData.append('charname', charname);
+        formData.append('vol', vol);
+        formData.append('version', version);
+        formData.append('releaseAt', releaseAt);
+        formData.append('path', path);
         formData.append('photo', photoUpload);
+        console.log(formData);
     
         try {
             // 發送請求到後端 API
-            const response = await fetch('/create_mrech', {
+            const response = await fetch('/create_merch', {
                 method: 'POST',
                 body: formData,
             });
@@ -102,12 +113,39 @@
                 const result = await response.json();
                 alert('Submission successful!');
                 console.log('Server response:', result);
-                // 你可以在這裡進一步處理結果，例如刷新圖片列表等
+
+                // 假設後端返回的 result 包含新創建的 merch_id
+                const merchID = result.merchID; // 後端返回的商品 ID
+
+                // 發送請求將該商品加入用戶收藏
+                try {
+                    const favoriteResponse = await fetch('/create_user_favorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ merch_id: merchID }), // 傳遞 merch_id
+                    });
+
+                    if (favoriteResponse.ok) {
+                        const favoriteResult = await favoriteResponse.json();
+                        console.log('Favorite created:', favoriteResult);
+                        alert('Merch has been added to your favorites!');
+                    } else {
+                        const favoriteError = await favoriteResponse.json();
+                        console.error('Error adding to favorites:', favoriteError);
+                        alert(`Failed to add merch to favorites: ${favoriteError.message}`);
+                    }
+                } catch (err) {
+                    console.error('Network or server error:', err);
+                    alert('An error occurred while adding merch to favorites.');
+                }
             } else {
                 const error = await response.text();
                 alert(`Submission failed: ${error}`);
                 console.error('Error response:', error);
             }
+
         } catch (err) {
             console.error('Network or server error:', err);
             alert('An error occurred while submitting the form.');

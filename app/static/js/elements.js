@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const { char_id, ip_id, image_path, name, price, release_at, merch_id ,path} = item;
         const photoURL = `/get_image?image_path=${encodeURIComponent(image_path)}`;
         // console.log("Generated photoURL:", photoURL);
-        const ipData = {};
+        var ipData = {};
         var is_fav = false;
         const addBtnText = `<button class="add-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: green; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>`;
         const deleteBtnText = `<button class="delete-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">-</button>`;
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const favResult = await favResponse.json();
                 if (favResult.status === "success") {
                     if (favResult.is_favorite) {
-                        console.log("This item is already in your list.");
+                        // console.log(ipData);
                         is_fav = true;
                     }
                 } else {

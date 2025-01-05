@@ -17,7 +17,7 @@ class User(db.Model):
     profile_image = db.Column(db.String(255), nullable=True)
 
     favorites = db.relationship('UserFavorites', back_populates='user', lazy=True)
-
+    cards = db.relationship('UserCards', back_populates='user', lazy=True)
     def __init__(self, username, email, password, cn=None, role='user', profile_image=None):
         self.username = username
         self.email = email
@@ -121,6 +121,7 @@ class Merch(db.Model):
     ip = db.relationship('IP')
     favorites = db.relationship('UserFavorites', back_populates='merch')
     tags = db.relationship('MerchTags', back_populates='merch')
+    cards = db.relationship('UserCards', back_populates='merch')
 
     def __init__(self, name, char_id, ip_id, price, path, image_path, release_at):
         self.name = name
@@ -183,3 +184,16 @@ class MerchTags(db.Model):
     # Relationships
     merch = db.relationship('Merch', back_populates='tags')
     tag = db.relationship('Tag', back_populates='merch_tags')
+
+# User Cards Table
+class UserCards(db.Model):
+    __tablename__ = 'user_cards'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    merch_id = db.Column(db.Integer, db.ForeignKey('merch.merch_id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    user = db.relationship('User', back_populates='cards')
+    merch = db.relationship('Merch', back_populates='cards')
