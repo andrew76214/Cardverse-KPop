@@ -200,8 +200,8 @@ Merch
 def get_all_merch():
     try:
         # Retrieve all merchandise from the database
-        merch_list = Merch.query.all()
-
+        merch_list = Merch.query.order_by(Merch.ip_id.asc()).all()
+        print(merch_list)
         # Convert each merchandise object to dictionary format
         merch_data = [merch.to_dict() for merch in merch_list]
 
@@ -377,7 +377,7 @@ def get_user_favorites_from_merch():
         if not user_id:
             return jsonify({"status": "error", "message": "User not logged in"}), 401
         # 使用 JOIN 查詢 user_favorites 與 merch 的關聯資料
-        favorites = db.session.query(Merch).join(UserFavorites).filter(UserFavorites.user_id == user_id).all()
+        favorites = db.session.query(Merch).join(UserFavorites).filter(UserFavorites.user_id == user_id).order_by(Merch.ip_id.asc()).all()
 
         # 將結果轉換為 JSON 格式
         result = [merch.to_dict() for merch in favorites]
@@ -503,7 +503,7 @@ def get_user_cards_from_merch():
         if not user_id:
             return jsonify({"status": "error", "message": "User not logged in"}), 401
         # 使用 JOIN 查詢 user_cards 與 merch 的關聯資料
-        cards = db.session.query(Merch).join(UserCards).filter(UserCards.user_id == user_id).all()
+        cards = db.session.query(Merch).join(UserCards).filter(UserCards.user_id == user_id).order_by(Merch.ip_id.asc()).all()
 
         # 將結果轉換為 JSON 格式
         result = [merch.to_dict() for merch in cards]

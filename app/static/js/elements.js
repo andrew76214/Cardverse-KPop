@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const result = await response.json();
                 
                 if (result.status === "success") {
-                    // console.log("Received merchandise data:", result.merchandise);
+                    console.log("Received merchandise data:", result.merchandise); // 檢查數據順序
 
                     // 顯示所有商品圖片
                     displayAllMerchImages(result.merchandise);
@@ -203,14 +203,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // 顯示所有商品圖片的函數
-    function displayAllMerchImages(merchandise) {
+    async function displayAllMerchImages(merchandise) {
         imagesContainer.innerHTML = ''; // 清空圖片容器
-        // console.log("Displaying all merchandise...");
-        // console.log("Merchandise:", merchandise);
 
-        merchandise.forEach(item => {
-            addPhotoCard(item);
-        });
+        for (const item of merchandise) {
+            await addPhotoCard(item); // 等待每個卡片完成渲染
+        }
     }
     
     // 添加圖片卡片
@@ -220,8 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // console.log("Generated photoURL:", photoURL);
         var ipData = {};
         var is_fav = false;
-        const addBtnText = `<button class="add-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: green; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>`;
-        const deleteBtnText = `<button class="delete-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">-</button>`;
+        var is_col = false;
         try {
             const response = await fetch(`/get_ip_by_id?ip_id=${ip_id}`, {
                 method: 'GET',
@@ -266,7 +263,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (err) {
             console.error("Error occurred while fetching favorite data:", err);
         }
-        const BtnTxt = is_fav ? `<button class="delete-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">-</button>` : `<button class="add-button" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: green; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>`;
+        try {
+            const colResponse = await fetch(`/get_user_card_by_id?merch_id=${merch_id}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        
+            if (colResponse.ok) {
+                const colResult = await colResponse.json();
+                if (colResult.status === "success") {
+                    if (colResult.is_card) {
+                        is_col = true;
+                    }
+                } else {
+                    console.error("Failed to fetch collection data:", colResult.message);
+                }
+            } else {
+                console.error("HTTP error when fetching collection data:", colResponse.status);
+            }
+        } catch (err) {
+            console.error("Error occurred while fetching collection data:", err);
+        }
+        const BtnTxt = is_fav ? `<button class="delete-button-wish" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">-</button>` : `<button class="add-button-wish" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: green; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>`;
+        const BtnTxt2 = is_col ? `<button class="delete-button-collect" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: red; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">-</button>` : `<button class="add-button-collect" data-name="${name}" data-merch-id="${merch_id}" style="color: white; background-color: green; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+</button>`;
         const groupName = ipData.ip_name;
         const cardHTML = `
             <div class="ms-card-wrapper">
@@ -282,7 +303,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 ${groupName} <br>
                                 ${name} <br>
                                 ${path} <br>
-                                ${BtnTxt}
+                                WishList: ${BtnTxt} <br>
+                                Collected: ${BtnTxt2}
                             </div>
                         </div>
                     </div>
@@ -291,68 +313,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         imagesContainer.insertAdjacentHTML('beforeend', cardHTML);
         ensureFourPerRow();
-
-        // const addButton = imagesContainer.querySelector(`.add-button`);
-        // console.log("add"+addButton); // 如果是 null，按鈕可能未加載成功或選取器有問題
-        // addButton.addEventListener('click', async () => {
-        //     const merchId = addButton.getAttribute('data-merch-id');
-        //     console.log(`Sending merch_id ${merchId} to the backend...`);
-    
-        //     try {
-        //         const response = await fetch('/create_user_favorite', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify({ merch_id: merchId }),
-        //         });
-    
-        //         if (response.ok) {
-        //             const result = await response.json();
-        //             if (result.status === 'success') {
-        //                 alert(`Added ${name} to your list!`);
-        //             } else {
-        //                 alert(`Failed to add ${name}: ${result.message}`);
-        //             }
-        //         } else {
-        //             alert(`HTTP error: ${response.status}`);
-        //         }
-        //     } catch (err) {
-        //         console.error('Error while adding item:', err);
-        //         alert('Failed to add item to the list.');
-        //     }
-        // });
-
-        // const deleteButton = imagesContainer.querySelector(`.delete-button`);
-        // console.log("delete"+deleteButton); // 如果是 null，按鈕可能未加載成功或選取器有問題
-        // deleteButton.addEventListener('click', async () => {
-        //     const merchId = deleteButton.getAttribute('data-merch-id');
-        //     console.log(`Sending merch_id ${merchId} to the backend...`);
-    
-        //     try {
-        //         const response = await fetch('/delete_user_favorite', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify({ merch_id: merchId }),
-        //         });
-    
-        //         if (response.ok) {
-        //             const result = await response.json();
-        //             if (result.status === 'success') {
-        //                 alert(`Deleted ${name} from your list!`);
-        //             } else {
-        //                 alert(`Failed to delete ${name}: ${result.message}`);
-        //             }
-        //         } else {
-        //             alert(`HTTP error: ${response.status}`);
-        //         }
-        //     } catch (err) {
-        //         console.error('Error while deleting item:', err);
-        //         alert('Failed to delete item from the list.');
-        //     }
-        // });
     }
 
     // 設置四列布局->6感覺比較好看
@@ -367,26 +327,40 @@ let isProcessing = false;
 
 imagesContainer.addEventListener('click', async (event) => {
     if (isProcessing) return;
-
+    var btnType = '';
     const target = event.target;
-    if (target.classList.contains('add-button')) {
+    if (target.classList.contains('add-button-wish')) {
         isProcessing = true;
-        await handleAdd(target);
+        btnType = 'wish';
+        await handleAdd(target, btnType);
         isProcessing = false;
-    } else if (target.classList.contains('delete-button')) {
+    } else if (target.classList.contains('delete-button-wish')) {
         isProcessing = true;
-        await handleDelete(target);
+        btnType = 'wish';
+        await handleDelete(target, btnType);
+        isProcessing = false;
+    } else if (target.classList.contains('add-button-collect')) {
+        isProcessing = true;
+        btnType = 'collect';
+        await handleAdd(target, btnType);
+        isProcessing = false;
+    } else if (target.classList.contains('delete-button-collect')) {
+        isProcessing = true;
+        btnType = 'collect';
+        await handleDelete(target, btnType);
         isProcessing = false;
     }
 });
 
-async function handleAdd(button) {
+async function handleAdd(button, btnType) {
     const merchId = button.getAttribute('data-merch-id');
     console.log(`Adding merch_id ${merchId}...`);
     button.disabled = true;
-
+    const routename = btnType == 'wish' ? 
+                    '/create_user_favorite' : '/create_user_card';
+    console.log(routename);
     try {
-        const response = await fetch('/create_user_favorite', {
+        const response = await fetch(routename, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ merch_id: merchId }),
@@ -396,8 +370,8 @@ async function handleAdd(button) {
             const result = await response.json();
             if (result.status === 'success') {
                 button.textContent = '-';
-                button.classList.remove('add-button');
-                button.classList.add('delete-button');
+                button.classList.remove('add-button'+btnType);
+                button.classList.add('delete-button'+btnType);
                 button.style.backgroundColor = 'red';
             } else {
                 alert(`Add failed: ${result.message}`);
@@ -413,13 +387,15 @@ async function handleAdd(button) {
     }
 }
 
-async function handleDelete(button) {
+async function handleDelete(button, btnType) {
     const merchId = button.getAttribute('data-merch-id');
     console.log(`Deleting merch_id ${merchId}...`);
     button.disabled = true;
+    const routename = btnType == 'wish' ? 
+                    '/delete_user_favorite' : '/delete_user_card';
 
     try {
-        const response = await fetch('/delete_user_favorite', {
+        const response = await fetch(routename, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ merch_id: merchId }),
@@ -429,8 +405,8 @@ async function handleDelete(button) {
             const result = await response.json();
             if (result.status === 'success') {
                 button.textContent = '+';
-                button.classList.remove('delete-button');
-                button.classList.add('add-button');
+                button.classList.remove('delete-button+btnType');
+                button.classList.add('add-button'+btnType);
                 button.style.backgroundColor = 'green';
             } else {
                 alert(`Delete failed: ${result.message}`);

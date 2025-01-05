@@ -208,12 +208,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // 顯示所有商品圖片的函數
-    function displayAllMerchImages(merchandise) {
+    async function displayAllMerchImages(merchandise) {
         imagesContainer.innerHTML = ''; // 清空圖片容器
 
-        merchandise.forEach(item => {
-            addPhotoCard(item);
-        });
+        for (const item of merchandise) {
+            await addPhotoCard(item); // 等待每個卡片完成渲染
+        }
     }
     
     // 添加圖片卡片
