@@ -1,26 +1,21 @@
 function processFormData() {
-    const nameElement = document.getElementById("username");
-    const emailElement = document.getElementById("useremail");
-    const feedbackElement = document.getElementById("feedback");
+    const titleElement = document.getElementById("title");
+    const contectElement = document.getElementById("contect");
 
-    const name = nameElement.value;
-    const email = emailElement.value;
-    const feedback = feedbackElement.value;
+    const title = titleElement.value;
+    const contect = contectElement.value;
 
-    if (!name || !email || !feedback) {
+    if (!title || !contect) {
         alert("請填寫所有欄位!");
         return;
     }
 
-    addComment(name, email, feedback);
-
-    alert( name + "發布成功 ");
+    addComment(title, contect);
 
     nameElement.value = '';
-    emailElement.value = '';
-    feedbackElement.value = '';
+    contectElement.value = '';
 }
-function addComment(name, email, feedback, parentReplyList = null) {
+function addComment(title, contect, parentReplyList = null) {
     const commentsList = parentReplyList || document.getElementById("comments-list");
 
     const newComment = document.createElement("li");
@@ -37,7 +32,7 @@ function addComment(name, email, feedback, parentReplyList = null) {
                     <i class="fa fa-heart"></i>
                 </div>
                 <div class="comment-content">
-                    ${feedback}
+                    ${contect}
                 </div>
                 <div class="comment-actions">
                     <button class="reply-btn">回覆</button>

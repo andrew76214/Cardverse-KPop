@@ -5,12 +5,18 @@ import os
 import mimetypes
 from sqlalchemy import and_
 from werkzeug.utils import secure_filename
+import uuid
 UPLOAD_FOLDER = 'app/static/images/card'  # 定義上傳目錄
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # 允許的檔案類型
 # 確保目錄存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 main_routes = Blueprint('main_routes', __name__)
+
+def process_filename(filename):
+    ext = filename.rsplit('.', 1)[1].lower()  # 提取副檔名
+    new_filename = f"{uuid.uuid4().hex}.{ext}"  # 使用 UUID
+    return new_filename
 
 @main_routes.route('/')
 def index():
@@ -388,16 +394,22 @@ def get_merch_by_id_user_favorite_ver():
         ip_id = data.get('ip_id')
         character_ids = data.get('character_ids', [])
 
-        # 檢查參數是否存在
+        # 模擬查詢數據庫
         if not ip_id:
-            return jsonify({"status": "error", "message": "Missing ip_id"}), 400
+            return jsonify({"status": "fail", "message": "ip_id is required"}), 400
+        elif not character_ids:
+            favorites = db.session.query(Merch).join(UserFavorites).filter(
+                            UserFavorites.user_id == user_id,
+                            Merch.ip_id == ip_id
+                        ).all()
+        else:
+            # 查詢用戶收藏的商品資料，並篩選特定角色
+            favorites = db.session.query(Merch).join(UserFavorites).filter(
+                            UserFavorites.user_id == user_id,
+                            Merch.char_id.in_(character_ids)
+                        ).all()
 
-        # 查詢用戶收藏的商品資料，並篩選特定角色
-        favorites = db.session.query(Merch).join(UserFavorites).filter(
-            UserFavorites.user_id == user_id,
-            Merch.char_id.in_(character_ids)
-        ).all()
-
+        
         # 將查詢結果轉換為 JSON 格式
         result = [merch.to_dict() for merch in favorites]
         return jsonify({"status": "success", "merchandise": result}), 200
@@ -418,9 +430,11 @@ def create_merch():
             return jsonify({"status": "error", "message": "Invalid file type"}), 400
 
         # 使用 secure_filename 防止檔案名注入
-        filename = secure_filename(file.filename)
+        # filename = secure_filename(file.filename)
         # print("filename")
         # print(filename)
+        filename = process_filename(file.filename)
+
         filepath = os.path.join(UPLOAD_FOLDER, filename)
 
 
@@ -459,14 +473,6 @@ def create_merch():
         merch_instance = Merch.query.filter_by(ip_id=ipdata['ip_id'], char_id=chardata['char_id'], name=merch_name).first()
         if merch_instance:
             return jsonify({"status": "error", "message": "Merchandise already exists"}), 409
-        
-        release_at = data.get('releaseAt')
-        
-        # 如果 release_at 是空值或空字串，設置為 None
-        if not release_at or release_at.strip() == '':
-            release_at = None
-        else:
-            release_at = datetime.strptime(release_at, "%Y-%m-%d %H:%M:%S")
         # 創建新商品
         new_merch = Merch(
             ip_id=ipdata['ip_id'],
@@ -475,7 +481,7 @@ def create_merch():
             price=0,
             path=data['path'],
             image_path=filename,
-            release_at=release_at
+            release_at=data['releaseAt']
         )
 
         # 保存至資料庫
@@ -514,15 +520,22 @@ def get_merch_by_id_user_card_ver():
         ip_id = data.get('ip_id')
         character_ids = data.get('character_ids', [])
 
-        # 檢查參數是否存在
+        # 模擬查詢數據庫
         if not ip_id:
-            return jsonify({"status": "error", "message": "Missing ip_id"}), 400
+            return jsonify({"status": "fail", "message": "ip_id is required"}), 400
+        elif not character_ids:
+            cards = db.session.query(Merch).join(UserFavorites).filter(
+                            UserCards.user_id == user_id,
+                            Merch.ip_id == ip_id
+                        ).all()
+        else:
+            # 查詢用戶收藏的商品資料，並篩選特定角色
+            cards = db.session.query(Merch).join(UserCards).filter(
+                        UserCards.user_id == user_id,
+                        Merch.char_id.in_(character_ids)
+                    ).all()
 
-        # 查詢用戶收藏的商品資料，並篩選特定角色
-        cards = db.session.query(Merch).join(UserCards).filter(
-            UserCards.user_id == user_id,
-            Merch.char_id.in_(character_ids)
-        ).all()
+        
 
         # 將查詢結果轉換為 JSON 格式
         result = [merch.to_dict() for merch in cards]
