@@ -4,6 +4,12 @@ from .extensions import db
 import os
 import mimetypes
 from sqlalchemy import and_
+from werkzeug.utils import secure_filename
+UPLOAD_FOLDER = 'app/static/images/card'  # 定義上傳目錄
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # 允許的檔案類型
+# 確保目錄存在
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 main_routes = Blueprint('main_routes', __name__)
 
 @main_routes.route('/')
@@ -27,11 +33,16 @@ def register():
 @main_routes.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('user_id', None)
+    session.pop('email', None)
+    session.pop('cn', None)
+    session.pop('role', None)
+
     return redirect('/')
 
 @main_routes.route('/cardDashboard', methods=['GET', 'POST'])
 def cardDashboard():
-    return render_template('landing.html')
+    return render_template('cardDashboard.html')
 
 @main_routes.route('/wishList', methods=['GET', 'POST'])
 def wishList():
@@ -112,38 +123,18 @@ IP
 - 創建IP
 - 獲取所有IP
 """
-@main_routes.route('/create_ip', methods=['POST'])
-def create_ip():
-    try:
-        # Try to receive JSON data
-        data = request.get_json()
 
-        if not data:
-            return jsonify({"status": "fail", "message": "No input data provided"}), 400
+def create_ip(ip_name):
 
-        ip_name = data.get("ip_name")
-        description = data.get("description")
+    # Check if the IP already exists
+    ip = IP.query.filter_by(ip_name=ip_name).first()
+    description = ""
 
-        if not ip_name:
-            return jsonify({"status": "fail", "message": "IP name fields are required"}), 400
-
-        # Check if the IP already exists
-        ip = IP.query.filter_by(ip_name=ip_name).first()
-        if ip:
-            return jsonify({"status": "fail", "message": "IP already exists"}), 409
-
-        # Create a new IP
-        new_ip = IP(ip_name=ip_name, description=description)
-        # Save to the database
-        db.session.add(new_ip)
-        db.session.commit()
-
-        return jsonify({"status": "success", "message": "IP created successfully"}), 201
-
-    except Exception as e:
-        print(f"Error: {e}")
-        # 返回錯誤響應
-        return jsonify({"status": "error", "message": "An error occurred", "details": str(e)}), 500
+    # Create a new IP
+    new_ip = IP(ip_name=ip_name, description=description)
+    # Save to the database
+    db.session.add(new_ip)
+    db.session.commit()
     
 @main_routes.route('/get_all_ip', methods=['GET'])
 def get_all_ip():
@@ -169,6 +160,17 @@ def get_ip_by_id():
 """
 IP_characters
 """
+def create_character(char_name, ip_id):
+    # Check if the character already exists
+    character = IPCharacter.query.filter_by(char_name=char_name).first()
+    description = ""
+
+    # Create a new character
+    new_character = IPCharacter(char_name=char_name, ip_id=ip_id, description=description)
+    # Save to the database
+    db.session.add(new_character)
+    db.session.commit()
+
 @main_routes.route('/get_character_by_ipid', methods=['GET'])
 def get_character_by_ipid():
     try:
@@ -401,3 +403,217 @@ def get_merch_by_id_user_favorite_ver():
         return jsonify({"status": "success", "merchandise": result}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@main_routes.route('/create_merch', methods=['POST'])
+def create_merch():
+    try:
+        file = request.files.get('photo')  # 獲取上傳的檔案
+        data = request.form  # 獲取其他的表單數據
+
+        if not file or file.filename == '':
+            return jsonify({"status": "error", "message": "No file provided"}), 400
+
+        # 驗證檔案類型
+        if '.' not in file.filename or file.filename.rsplit('.', 1)[1].lower() not in ALLOWED_EXTENSIONS:
+            return jsonify({"status": "error", "message": "Invalid file type"}), 400
+
+        # 使用 secure_filename 防止檔案名注入
+        filename = secure_filename(file.filename)
+        # print("filename")
+        # print(filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+
+
+        # 儲存檔案到伺服器
+        file.save(filepath)
+        
+        if not data:
+            return jsonify({"status": "error", "message": "No input data provided"}), 400
+        print(data)
+        # print(file)
+        # 檢查必要欄位
+        required_fields = ['ipName', 'charname']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"status": "error", "message": f"Missing {field}"}), 400
+        
+        # 檢查 IP 是否存在
+        ip_instance = IP.query.filter_by(ip_name=data['ipName']).first()
+        if not ip_instance:
+            create_ip(data['ipName'])
+            ip_instance = IP.query.filter_by(ip_name=data['ipName']).first()
+        ipdata = ip_instance.to_dict()
+        print("ipdata")
+        print(ipdata)
+
+        # 檢查角色是否存在
+        char_instance = IPCharacter.query.filter_by(ip_id=ipdata['ip_id'], char_name=data['charname']).first()
+        if not char_instance:
+            create_character(data['charname'], ipdata['ip_id'])
+            char_instance = IPCharacter.query.filter_by(ip_id=ipdata['ip_id'], char_name=data['charname']).first()
+        chardata = char_instance.to_dict()
+        print("chardata")
+        print(chardata)
+        merch_name = data['charname'] + "_" + data['vol'] + "_" + data['version']
+        # 檢查商品是否存在
+        merch_instance = Merch.query.filter_by(ip_id=ipdata['ip_id'], char_id=chardata['char_id'], name=merch_name).first()
+        if merch_instance:
+            return jsonify({"status": "error", "message": "Merchandise already exists"}), 409
+        
+        release_at = data.get('releaseAt')
+        
+        # 如果 release_at 是空值或空字串，設置為 None
+        if not release_at or release_at.strip() == '':
+            release_at = None
+        else:
+            release_at = datetime.strptime(release_at, "%Y-%m-%d %H:%M:%S")
+        # 創建新商品
+        new_merch = Merch(
+            ip_id=ipdata['ip_id'],
+            char_id=chardata['char_id'],
+            name=merch_name,
+            price=0,
+            path=data['path'],
+            image_path=filename,
+            release_at=release_at
+        )
+
+        # 保存至資料庫
+        db.session.add(new_merch)
+        db.session.commit()
+
+        return jsonify({"status": "success", "merchID": new_merch.to_dict()['merch_id']}), 201
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+"""
+search_mearch(user_card version)
+"""
+@main_routes.route('/get_user_cards_from_merch', methods=['GET'])
+def get_user_cards_from_merch():
+    try:
+        print(session)
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "error", "message": "User not logged in"}), 401
+        # 使用 JOIN 查詢 user_cards 與 merch 的關聯資料
+        cards = db.session.query(Merch).join(UserCards).filter(UserCards.user_id == user_id).all()
+
+        # 將結果轉換為 JSON 格式
+        result = [merch.to_dict() for merch in cards]
+        return jsonify({"status": "success", "merchandise": result}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+@main_routes.route('/get_merch_by_id_user_card_ver', methods=['POST'])
+def get_merch_by_id_user_card_ver():
+    try:
+        user_id = session.get('user_id')
+        # 從請求的 JSON 數據中獲取 ip_id 和 char_id
+        data = request.json
+        ip_id = data.get('ip_id')
+        character_ids = data.get('character_ids', [])
+
+        # 檢查參數是否存在
+        if not ip_id:
+            return jsonify({"status": "error", "message": "Missing ip_id"}), 400
+
+        # 查詢用戶收藏的商品資料，並篩選特定角色
+        cards = db.session.query(Merch).join(UserCards).filter(
+            UserCards.user_id == user_id,
+            Merch.char_id.in_(character_ids)
+        ).all()
+
+        # 將查詢結果轉換為 JSON 格式
+        result = [merch.to_dict() for merch in cards]
+        return jsonify({"status": "success", "merchandise": result}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+"""
+User_Cards
+"""
+@main_routes.route('/get_user_cards', methods=['GET'])
+def get_user_cards():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        cards_list = UserCards.query.filter_by(user_id=user_id).all()
+        cards_data = [fav.to_dict() for fav in cards_list]
+
+        return jsonify({"status": "success", "cards": cards_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/create_user_card', methods=['POST'])
+def create_user_card():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        data = request.get_json()
+        merch_id = data.get('merch_id')
+        if not merch_id:
+            return jsonify({"status": "fail", "message": "merch_id is required"}), 400
+
+        # 檢查是否已存在
+        card = UserCards.query.filter_by(user_id=user_id, merch_id=merch_id).first()
+        if card:
+            return jsonify({"status": "fail", "message": "Card already exists"}), 409
+
+        # 新建收藏
+        new_card = UserCards(user_id=user_id, merch_id=merch_id)
+        db.session.add(new_card)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Card created successfully"}), 201
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/get_user_card_by_id', methods=['GET'])
+def get_user_card_by_id():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        merch_id = request.args.get('merch_id')
+        if not merch_id:
+            return jsonify({"status": "fail", "message": "merch_id is required"}), 400
+
+        card = UserCards.query.filter_by(user_id=user_id, merch_id=merch_id).first()
+        if not card:
+            return jsonify({"status": "success", "is_card": False}), 200
+
+        return jsonify({"status": "success", "is_card": True}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+    
+    
+@main_routes.route('/delete_user_card', methods=['POST'])
+def delete_user_card():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+        data = request.get_json()
+        merch_id = data.get('merch_id')
+        if not merch_id:
+            return jsonify({"status": "fail", "message": "merch_id is required"}), 400
+
+        # 查找收藏
+        card = UserCards.query.filter_by(user_id=user_id, merch_id=merch_id).first()
+        if not card:
+            return jsonify({"status": "fail", "message": "Card not found"}), 404
+
+        # 刪除收藏
+        db.session.delete(card)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Card deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
