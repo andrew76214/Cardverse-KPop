@@ -24,11 +24,9 @@
 		<br>
 	<!-- 輸入框 先宣告submit不回傳 再定義各個欄位form內容 -->
 	<form action="" method="post" onsubmit="return false;">
-	<INPUT TYPE="text" id="username" name="username" value="" placeholder="姓名" class="BG-Copy" size="30" />
-	<INPUT TYPE="text" id="useremail" name="useremail" value="" placeholder="email" class="BG-Copy" size="30" />
+	<input type="text" id="title" name="title" value="" placeholder="請輸入標題" class="BG-Copy" size="80" />
 	<br>
-	<TEXTAREA NAME="feedback" id="feedback" ROWS="8" COLS="80" placeholder="想說甚麼都可以" class="BG-Copy"
-	style="border:2px #2f3944 solid;"></TEXTAREA>
+	<TEXTAREA name="contect" id="contect" ROWS="8" COLS="80" placeholder="想說什麼都可以" class="BG-Copy"></TEXTAREA>
 	<br>
 	<form action="/upload" method="post" enctype="multipart/form-data">
 	  <!-- 上傳按鈕 -->

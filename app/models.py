@@ -112,7 +112,7 @@ class Merch(db.Model):
     price = db.Column(db.Numeric(10, 2))
     path = db.Column(db.String(255))
     image_path = db.Column(db.String(255))
-    release_at = db.Column(db.DateTime)
+    release_at = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -141,7 +141,7 @@ class Merch(db.Model):
             "price": float(self.price) if self.price else 0.0,
             "path": self.path,
             "image_path": self.image_path,
-            "release_at": self.release_at.strftime("%Y-%m-%d %H:%M:%S") if self.release_at else None,
+            "release_at": self.release_at,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S") if self.created_at else None,
             "updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S") if self.updated_at else None
         }
