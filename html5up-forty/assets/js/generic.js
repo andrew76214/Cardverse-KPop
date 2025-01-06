@@ -35,6 +35,24 @@ function processFormData() {
 function addComment(name, email, feedback, parentReplyList = null, imageUrl = null) {
     const commentsList = parentReplyList || document.getElementById("comments-list");
 
+    // 修正巢狀層級檢查
+    let level = 0;
+    let currentElement = commentsList;
+
+    // 遍歷父節點，計算層級
+    while (currentElement && currentElement.id !== "comments-list") {
+        if (currentElement.classList.contains("reply-list")) {
+            level++;
+        }
+        currentElement = currentElement.parentElement;
+    }
+
+    // 限制層級到 3 層
+    if (level >= 4) {
+        alert("此留言串不能再添加留言！");
+        return;
+    }
+
     const newComment = document.createElement("li");
     newComment.innerHTML = `
         <div class="comment-main-level">
@@ -122,3 +140,4 @@ function showReplyForm(parentComment) {
 
     parentComment.querySelector(".comment-box").appendChild(replyForm);
 }
+
