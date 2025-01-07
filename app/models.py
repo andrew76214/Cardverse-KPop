@@ -18,6 +18,9 @@ class User(db.Model):
 
     favorites = db.relationship('UserFavorites', back_populates='user', lazy=True)
     cards = db.relationship('UserCards', back_populates='user', lazy=True)
+    topic_lists = db.relationship('TopicList', back_populates='user')  # 與 TopicList 表的雙向關聯
+    comments = db.relationship('Comments', back_populates='user')  # 與 Comments 表的雙向關聯
+
     def __init__(self, username, email, password, cn=None, role='user', profile_image=None):
         self.username = username
         self.email = email
@@ -197,3 +200,71 @@ class UserCards(db.Model):
     # Relationships
     user = db.relationship('User', back_populates='cards')
     merch = db.relationship('Merch', back_populates='cards')
+
+class TopicList(db.Model):
+    """
+    第一個表，用來存放討論主題的資訊
+    """
+    __tablename__ = 'topic_list'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 主鍵 ID
+    title = db.Column(db.String(255), nullable=False, index=True)  # 討論主題的標題
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # 發表主題的用戶 ID
+    user_name = db.Column(db.String(50), nullable=False)  # 發表主題的用戶名稱
+    create_at = db.Column(db.DateTime, default=datetime.utcnow)  # 建立時間
+    update_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # 更新時間
+
+    user = db.relationship('User', back_populates='topic_lists')  # 與 User 表的雙向關聯
+    comments = db.relationship('Comments', back_populates='topic_list')  # 與 Comments 表的雙向關聯
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "user_id": self.user_id,
+            "user_name": self.user_name,
+            "create_at": self.create_at.strftime("%Y-%m-%d %H:%M:%S") if self.create_at else None,
+            "update_at": self.update_at.strftime("%Y-%m-%d %H:%M:%S") if self.update_at else None
+        }
+
+
+
+class Comments(db.Model):
+    """
+    第二個表，用來存放主題的回應資訊
+    """
+    __tablename__ = 'comments'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 主鍵 ID
+    content = db.Column(db.Text, nullable=False)  # 回應內容
+    topic_id = db.Column(db.Integer, db.ForeignKey('topic_list.id'), nullable=False, index=True)  # 對應的主題 ID
+    father_comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'), nullable=True)  # 父回應 ID
+    comment_order = db.Column(db.Integer, nullable=False)  # 回應順序
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # 發表回應的用戶 ID
+    user_name = db.Column(db.String(50), nullable=False)  # 發表回應的用戶名稱
+    image_path = db.Column(db.String(255))  # 檔案的儲存路徑
+
+    create_at = db.Column(db.DateTime, default=datetime.utcnow)  # 建立時間
+    update_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # 更新時間
+
+    user = db.relationship('User', back_populates='comments')  # 與 User 表的雙向關聯
+    topic_list = db.relationship('TopicList', back_populates='comments')  # 與 TopicList 表的雙向關聯
+    parent_comment = db.relationship('Comments', remote_side=[id], backref='replies')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+            "topic_id": self.topic_id,
+            "father_comment_id": self.father_comment_id,
+            "comment_order": self.comment_order,
+            "user_id": self.user_id,
+            "user_name": self.user_name,
+            "image_path": self.image_path,
+            "create_at": self.create_at.strftime("%Y-%m-%d %H:%M:%S") if self.create_at else None,
+            "update_at": self.update_at.strftime("%Y-%m-%d %H:%M:%S") if self.update_at else None
+        }
+
+    
+
+

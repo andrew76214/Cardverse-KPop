@@ -84,7 +84,7 @@
         const photoUpload = document.getElementById('photoUpload').files[0];
     
         if (!photoUpload) {
-            alert('Please upload a photo!');
+            // alert('Please upload a photo!');
             return;
         }
     
@@ -108,7 +108,7 @@
     
             if (response.ok) {
                 const result = await response.json();
-                alert('Submission successful!');
+                // alert('Submission successful!');
                 console.log('Server response:', result);
 
                 // 假設後端返回的 result 包含新創建的 merch_id
@@ -127,25 +127,25 @@
                     if (favoriteResponse.ok) {
                         const favoriteResult = await favoriteResponse.json();
                         console.log('Favorite created:', favoriteResult);
-                        alert('Merch has been added to your favorites!');
+                        // alert('Merch has been added to your favorites!');
                     } else {
                         const favoriteError = await favoriteResponse.json();
                         console.error('Error adding to favorites:', favoriteError);
-                        alert(`Failed to add merch to favorites: ${favoriteError.message}`);
+                        // alert(`Failed to add merch to favorites: ${favoriteError.message}`);
                     }
                 } catch (err) {
                     console.error('Network or server error:', err);
-                    alert('An error occurred while adding merch to favorites.');
+                    // alert('An error occurred while adding merch to favorites.');
                 }
             } else {
                 const error = await response.text();
-                alert(`Submission failed: ${error}`);
+                // alert(`Submission failed: ${error}`);
                 console.error('Error response:', error);
             }
 
         } catch (err) {
             console.error('Network or server error:', err);
-            alert('An error occurred while submitting the form.');
+            // alert('An error occurred while submitting the form.');
         }
     });
 </script>

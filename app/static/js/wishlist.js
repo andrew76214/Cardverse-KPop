@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // 檢查是否有選中的 IP ID
             if (!selectedIPID) {
                 // console.log("No IP ID selected.");
-                alert("請先選擇一個 IP ID！");
+                // alert("請先選擇一個 IP ID！");
                 return;
             }
     
@@ -150,16 +150,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                         addPhotoCard(item);
                     });
                 } else {
-                    alert(`提交失敗: ${result.message}`);
+                    // alert(`提交失敗: ${result.message}`);
                 }
             } else {
                 console.error("HTTP error:", response.message);
-                alert("提交失敗，請稍後重試！");
+                // alert("提交失敗，請稍後重試！");
             }
         } catch (error) {
             // 捕獲異常
             console.error("Error occurred during submission:", error);
-            alert("提交過程中發生錯誤！");
+            // alert("提交過程中發生錯誤！");
         }
     });
 
@@ -195,15 +195,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     displayAllMerchImages(result.merchandise);
                 } else {
                     console.error("Failed to fetch merchandise:", result.message);
-                    alert(`無法獲取商品資料：${result.message}`);
+                    // alert(`無法獲取商品資料：${result.message}`);
                 }
             } else {
                 console.error("HTTP error:", response.message);
-                alert("無法獲取商品資料，請稍後重試！");
+                // alert("無法獲取商品資料，請稍後重試！");
             }
         } catch (error) {
             console.error("Error occurred while fetching merchandise:", error);
-            alert("獲取商品資料時發生錯誤！");
+            // alert("獲取商品資料時發生錯誤！");
         }
     });
 
@@ -313,16 +313,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         //         if (response.ok) {
         //             const result = await response.json();
         //             if (result.status === 'success') {
-        //                 alert(`Added ${name} to your list!`);
+        //                 // alert(`Added ${name} to your list!`);
         //             } else {
-        //                 alert(`Failed to add ${name}: ${result.message}`);
+        //                 // alert(`Failed to add ${name}: ${result.message}`);
         //             }
         //         } else {
-        //             alert(`HTTP error: ${response.status}`);
+        //             // alert(`HTTP error: ${response.status}`);
         //         }
         //     } catch (err) {
         //         console.error('Error while adding item:', err);
-        //         alert('Failed to add item to the list.');
+        //         // alert('Failed to add item to the list.');
         //     }
         // });
 
@@ -344,16 +344,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         //         if (response.ok) {
         //             const result = await response.json();
         //             if (result.status === 'success') {
-        //                 alert(`Deleted ${name} from your list!`);
+        //                 // alert(`Deleted ${name} from your list!`);
         //             } else {
-        //                 alert(`Failed to delete ${name}: ${result.message}`);
+        //                 // alert(`Failed to delete ${name}: ${result.message}`);
         //             }
         //         } else {
-        //             alert(`HTTP error: ${response.status}`);
+        //             // alert(`HTTP error: ${response.status}`);
         //         }
         //     } catch (err) {
         //         console.error('Error while deleting item:', err);
-        //         alert('Failed to delete item from the list.');
+        //         // alert('Failed to delete item from the list.');
         //     }
         // });
     }
@@ -403,14 +403,14 @@ async function handleAdd(button) {
                 button.classList.add('delete-button');
                 button.style.backgroundColor = 'red';
             } else {
-                alert(`Add failed: ${result.message}`);
+                // alert(`Add failed: ${result.message}`);
             }
         } else {
-            alert(`HTTP Error: ${response.status}`);
+            // alert(`HTTP Error: ${response.status}`);
         }
     } catch (err) {
         console.error('Error while adding item:', err);
-        alert('Failed to add item.');
+        // alert('Failed to add item.');
     } finally {
         button.disabled = false; // 確保按鈕可再次操作
     }
@@ -436,14 +436,14 @@ async function handleDelete(button) {
                 button.classList.add('add-button');
                 button.style.backgroundColor = 'green';
             } else {
-                alert(`Delete failed: ${result.message}`);
+                // alert(`Delete failed: ${result.message}`);
             }
         } else {
-            alert(`HTTP Error: ${response.status}`);
+            // alert(`HTTP Error: ${response.status}`);
         }
     } catch (err) {
         console.error('Error while deleting item:', err);
-        alert('Failed to delete item.');
+        // alert('Failed to delete item.');
     } finally {
         button.disabled = false; // 確保按鈕可再次操作
     }
