@@ -23,16 +23,14 @@ def index():
     print(session)
     if 'username' in session:
         user = User.query.filter_by(username=session['username']).first()
-        # print(user)
-        # userdata = user.to_dict()
         return render_template('index.html', user=user)
     return render_template('index.html', user=None)
 
-@main_routes.route('/login', methods=['GET', 'POST'])
+@main_routes.route('/login')
 def login():
     return render_template('login.html')
 
-@main_routes.route('/register', methods=['GET', 'POST'])
+@main_routes.route('/register')
 def register():
     return render_template('register.html')
     
@@ -46,17 +44,17 @@ def logout():
 
     return redirect('/')
 
-@main_routes.route('/cardDashboard', methods=['GET', 'POST'])
+@main_routes.route('/cardDashboard')
 def cardDashboard():
     return render_template('cardDashboard.html')
 
-@main_routes.route('/wishList', methods=['GET', 'POST'])
+@main_routes.route('/wishList')
 def wishList():
     return render_template('wishlist.html')
-@main_routes.route('/shop', methods=['GET', 'POST'])
+@main_routes.route('/shop')
 def shop():
     return render_template('shop.html')
-@main_routes.route('/elements', methods=['GET', 'POST'])
+@main_routes.route('/elements')
 def elements():
     return render_template('elements.html')
 """
