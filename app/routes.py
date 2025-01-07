@@ -23,16 +23,14 @@ def index():
     print(session)
     if 'username' in session:
         user = User.query.filter_by(username=session['username']).first()
-        # print(user)
-        # userdata = user.to_dict()
         return render_template('index.html', user=user)
     return render_template('index.html', user=None)
 
-@main_routes.route('/login', methods=['GET', 'POST'])
+@main_routes.route('/login')
 def login():
     return render_template('login.html')
 
-@main_routes.route('/register', methods=['GET', 'POST'])
+@main_routes.route('/register')
 def register():
     return render_template('register.html')
     
@@ -46,17 +44,17 @@ def logout():
 
     return redirect('/')
 
-@main_routes.route('/cardDashboard', methods=['GET', 'POST'])
+@main_routes.route('/cardDashboard')
 def cardDashboard():
     return render_template('cardDashboard.html')
 
-@main_routes.route('/wishList', methods=['GET', 'POST'])
+@main_routes.route('/wishList')
 def wishList():
     return render_template('wishlist.html')
-@main_routes.route('/shop', methods=['GET', 'POST'])
+@main_routes.route('/shop')
 def shop():
-    return render_template('generic.html')
-@main_routes.route('/elements', methods=['GET', 'POST'])
+    return render_template('shop.html')
+@main_routes.route('/elements')
 def elements():
     return render_template('elements.html')
 """
@@ -120,6 +118,17 @@ def create_user():
         print(f"Error: {e}")
         return jsonify({"status": "fail", "message": "Internal Server Error"}), 500
 
+@main_routes.route('/get_user_by_id', methods=['GET'])
+def get_user_by_id():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"status": "fail", "message": "User not logged in"}), 401
+
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({"status": "fail", "message": "User not found"}), 404
+
+    return jsonify({"status": "success", "user_data": user.to_dict()}), 200
 
 @main_routes.route('/health', methods=['GET'])
 def health():
@@ -429,10 +438,6 @@ def create_merch():
         if '.' not in file.filename or file.filename.rsplit('.', 1)[1].lower() not in ALLOWED_EXTENSIONS:
             return jsonify({"status": "error", "message": "Invalid file type"}), 400
 
-        # 使用 secure_filename 防止檔案名注入
-        # filename = secure_filename(file.filename)
-        # print("filename")
-        # print(filename)
         filename = process_filename(file.filename)
 
         filepath = os.path.join(UPLOAD_FOLDER, filename)
@@ -628,5 +633,197 @@ def delete_user_card():
         db.session.commit()
 
         return jsonify({"status": "success", "message": "Card deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+    
+
+
+"""
+Topic_list
+"""
+
+@main_routes.route('/create_topic', methods=['POST'])
+def create_topic():
+    try:
+        data = request.get_json()
+        topic_name = data.get('topicTitle')
+        user_id = session.get('user_id')
+        user_name = session.get('cn')
+
+        if not topic_name:
+            return jsonify({"status": "fail", "message": "topic_name is required"}), 400
+
+        # 新建主題
+        new_topic = TopicList(title=topic_name, user_id=user_id, user_name=user_name)
+        db.session.add(new_topic)
+        db.session.commit()
+           
+        return jsonify({"status": "success", "topic_data": new_topic.to_dict()}), 201
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+    
+@main_routes.route('/get_all_topic', methods=['GET'])
+def get_all_topic():
+    try:
+        topic_list = TopicList.query.all()
+        topic_data = [topic.to_dict() for topic in topic_list]
+
+        return jsonify({"status": "success", "topic_data": topic_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+@main_routes.route('/get_topic_by_id', methods=['GET'])
+def get_topic_by_id():
+    try:
+        topic_id = request.args.get("topic_id")
+        # search topic by id
+        topic_instance = TopicList.query.filter_by(id=topic_id).first()
+        if not topic_instance:
+            return jsonify({"status": "fail", "message": "Topic not found"}), 404
+        topic_data = topic_instance.to_dict()
+        return jsonify({"status": "success", "topic_data": topic_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+"""
+Comments
+"""
+@main_routes.route('/create_comment', methods=['POST'])
+def create_comment():
+    try:
+        data = request.get_json()
+        user_id = session.get('user_id')
+        user_name = session.get('cn')
+        topic_id = data.get('topic_id')
+        content = data.get('content')
+        father_comment_id = data.get('father_comment_id')
+        comment_order = data.get('comment_order')
+        image_path = data.get('filename')
+
+        if not topic_id or not content:
+            return jsonify({"status": "fail", "message": "topic_id and content are required"}), 400
+
+        new_comment = Comments(user_id=user_id, topic_id=topic_id, content=content, father_comment_id=father_comment_id, comment_order=comment_order, image_path=image_path, user_name=user_name)
+        db.session.add(new_comment)
+        db.session.commit()
+
+        return jsonify({"status": "success", "comment_data": new_comment.to_dict()}), 201
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/get_comment_by_id', methods=['GET'])
+def get_comment_by_id():
+    try:
+        comment_id = request.args.get('comment_id')
+        if not comment_id:
+            return jsonify({"status": "fail", "message": "comment_id is required"}), 400
+
+        comment = Comments.query.filter_by(id=comment_id).first()
+        comment_data = comment.to_dict()
+
+        return jsonify({"status": "success", "comment_data": comment_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+# @main_routes.route('/get_comments', methods=['GET'])
+# def get_comments():
+#     try:
+#         topic_id = request.args.get('topic_id')
+#         limit = request.args.get('limit', type=int)
+
+#         if not topic_id:
+#             return jsonify({"status": "fail", "message": "topic_id is required"}), 400
+
+#         comments = Comments.query.filter_by(topic_id=topic_id).order_by(Comments.create_at.asc()).all()
+#         print(comments)
+#         comment_data = [comment.to_dict() for comment in comments]
+
+#         return jsonify({"status": "success", "comment_data": comment_data}), 200
+#     except Exception as e:
+#         return jsonify({"status": "fail", "message": str(e)}), 500
+
+@main_routes.route('/get_comment_by_topicid_and_comment_order', methods=['GET'])
+def get_comment_by_topicid_and_comment_order():
+    try:
+        topic_id = request.args.get('topic_id')
+        comment_order = request.args.get('comment_order')
+        if not topic_id or not comment_order:
+            return jsonify({"status": "fail", "message": "topic_id and comment_order are required"}), 400
+
+        comment = Comments.query.filter_by(topic_id=topic_id, comment_order=comment_order).first()
+        comment_data = comment.to_dict()
+
+        return jsonify({"status": "success", "comment_data": comment_data}), 200
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+
+
+
+UPLOAD_FOLDER_SHOP = os.path.join(main_routes.root_path, 'static', 'images', 'shop')
+# 確保目錄存在
+os.makedirs(UPLOAD_FOLDER_SHOP, exist_ok=True) 
+
+@main_routes.route('/upload_shop_image', methods=['POST'])
+def upload_shop_image():
+    if 'image' not in request.files:
+        return jsonify({"status": "error", "message": "No file part"})
+    
+    file = request.files['image']
+
+    if not file or file.filename == '':
+            return jsonify({"status": "error", "message": "No file provided"}), 400
+    
+    # 驗證檔案類型
+    if '.' not in file.filename or file.filename.rsplit('.', 1)[1].lower() not in ALLOWED_EXTENSIONS:
+        return jsonify({"status": "error", "message": "Invalid file type"}), 400
+    if file:
+        filename = process_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER_SHOP, filename)
+        # 儲存檔案到伺服器
+        file.save(filepath)
+        return jsonify({"status": "success","filename": filename, "message": f"File {filename} uploaded successfully"})
+    
+    return jsonify({"status": "error", "message": "Something went wrong"})
+
+@main_routes.route('/get_shop_image', methods=['GET'])
+def get_shop_image():
+    """
+    動態獲取圖片 API
+    Query Params:
+    - image_path: 前端提供的圖片相對路徑 (e.g., "images/card/miku_10c_beforetraining.jpg")
+    """
+    try:
+        # 從查詢參數中獲取圖片路徑
+        filename = request.args.get('filename')
+        print(filename)
+        if not filename:
+            return jsonify({"status": "fail", "message": "No filename provided"}), 400
+
+        # 確定圖片的完整路徑
+        full_image_path = os.path.join(UPLOAD_FOLDER_SHOP, filename)
+        print(f"Iamge Folder Path: {UPLOAD_FOLDER_SHOP}")
+        print(f"Requested Image Path: {full_image_path}")
+
+        # 檢查圖片是否存在
+        if not os.path.isfile(full_image_path):
+            return jsonify({"status": "fail", "message": "Image not found"}), 404
+
+        # 返回圖片文件
+        return send_file(full_image_path, mimetype=mimetypes.guess_type(full_image_path)[0])
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+    
+@main_routes.route('/get_comments', methods=['GET'])
+def get_comments():
+    try:
+        topic_id = request.args.get('topic_id')
+        limit = request.args.get('limit', type=int, default=10)
+
+        if not topic_id:
+            return jsonify({"status": "fail", "message": "topic_id is required"}), 400
+
+        comments = Comments.query.filter_by(topic_id=topic_id).order_by(Comments.create_at.asc()).limit(limit).all()
+        print(comments)
+        comment_data = [comment.to_dict() for comment in comments]
+
+        return jsonify({"status": "success", "comment_data": comment_data}), 200
     except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500

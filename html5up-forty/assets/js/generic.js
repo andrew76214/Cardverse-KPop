@@ -9,7 +9,7 @@ function processFormData() {
     const feedback = feedbackElement.value;
 
     if (!name || !email || !feedback) {
-        alert("請填寫所有欄位!");
+        // alert("請填寫所有欄位!");
         return;
     }
 
@@ -18,12 +18,12 @@ function processFormData() {
         reader.onload = function (e) {
             const imageUrl = e.target.result; // 獲取圖片的 Base64 URL
             addComment(name, email, feedback, null, imageUrl);
-            alert(name + " 發布成功!");
+            // alert(name + " 發布成功!");
         };
         reader.readAsDataURL(fileInput.files[0]); // 讀取圖片檔案
     } else {
         addComment(name, email, feedback);
-        alert(name + " 發布成功!");
+        // alert(name + " 發布成功!");
     }
 
     nameElement.value = '';
@@ -113,7 +113,7 @@ function showReplyForm(parentComment) {
         const replyText = replyForm.querySelector(".reply-text").value.trim();
         const replyFileInput = replyForm.querySelector(".reply-file-input");
         if (!replyText) {
-            alert("請輸入回覆內容!");
+            // alert("請輸入回覆內容!");
             return;
         }
 

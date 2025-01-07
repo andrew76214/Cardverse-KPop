@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- 頁籤標題 -->
+    <title>交流及周邊交易區</title>
+    
+    <!-- 引用css/style設計 -->
+    <link rel="stylesheet" href="../static/css/shop.css" />
+    <style>
+        p {
+            color: red;
+        }
+    </style>
+</head>
+
+<body align="center">
+    <br>
+    <!-- 輸入框 先宣告submit不回傳 再定義各個欄位form內容 -->
+    <form action="" method="post" onsubmit="return false;">
+        <!-- 標題 -->
+        <input type="text" id="topic_title" name="topic_title" value="" placeholder="標題" class="BG-Copy" size="30" />
+        <br>
+        <!-- 內容 -->
+        <textarea name="content" id="content" rows="8" cols="80" placeholder="想說什麼都可以" class="BG-Copy" style="border:2px #2f3944 solid;"></textarea>
+        <br>
+        <!-- 提交按鈕 -->
+        <button id="submitBtn" type="submit" value="送出" class="Base" style='text-align:"right"'>送出</button>
+    </form>
+    
+    <!-- 上傳表單獨立 -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <!-- 上傳按鈕 -->
+        <input type="file" id="fileInput" name="image" accept="image/*">
+        <!-- 提交按鈕 -->
+        <button type="submit">上傳</button>
+    </form>
+    <br>
+    <!-- 顯示回傳訊息的區域 -->
+    <div id="responseMessage" style="margin-top: 20px;"></div>
+
+    <!-- 分隔線hr -->
+    <hr>
+
+    <div class="comments-container">
+        <h1>交流及周邊交易區</h1>
+
+        <ul id="comments-list" class="comments-list">
+            <li>
+                <div class="comment-main-level">
+                    <div class="comment-avatar">
+                        <img src="http://i9.photobucket.com/albums/a88/creaticode/avatar_1_zps8e1c80cd.jpg" alt="">
+                    </div>
+                    <div class="comment-box">
+                        <div class="comment-head">
+                            <h6 class="comment-name by-author">
+                                <a href="http://creaticode.com/blog">HOST</a>
+                            </h6>
+                            <!--<span>hace 20 minutos</span>-->
+                            <i class="fa fa-reply"></i>
+                            <i class="fa fa-heart"></i>
+                        </div>
+                        <div class="comment-content">
+                            Welcome!
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script src="../static/js/shop.js"></script>
+</body>
+
+</html>
