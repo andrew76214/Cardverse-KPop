@@ -10,6 +10,7 @@ Cardverse-KPop is a web application developed as the final project for the Cloud
 - [Installation](#installation)
 - [Usage](#usage)
 - [Folder Structure](#folder-structure)
+- [Mind Map](#mind-map)
 - [License](#license)
 - [Contributors](#contributors)
 
@@ -32,7 +33,7 @@ This project provides a platform for K-Pop enthusiasts to collect and trade virt
 - **Containerization**: Docker for environment consistency
 - **Web Server**: Nginx for serving the application
 
-https://github.com/andrew76214/Cardverse-KPop/tree/main/img/SQL_arichecture.png
+![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/SQL_arichecture.png)
 
 ## Installation
 
@@ -57,9 +58,19 @@ To set up the project locally, follow these steps:
 
 ## Usage
 - Register: Create a new account to start your photocard collection.
+
+![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/signup_interface.png)
+
 - Log In: Access your account to view and manage your collection.
+
+![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/login_interface.png)
+
 - Browse Photocards: Explore the available K-Pop photocards.
-- Add to Collection: Select photocards to add to your personal collection.
+
+![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/collect_interface.png)
+![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/card_interface.png)
+
+- Add to Collection: Select photocards to add to your personal collection.  
 - Trade Photocards: Initiate trades with other users to expand your collection.
 
 ## Folder Structure
@@ -97,6 +108,10 @@ Cardverse-KPop/
 - The html5up-forty/ directory includes the frontend template used for the application's design.
 - The migrations/ directory is used for database migrations.
 - Configuration files such as config.py, nginx.conf, and docker-compose.yaml are located in the root directory.
+
+## Mind Map
+
+![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/mind_map.png)
 
 ## License
 This project is licensed under the MIT License.
