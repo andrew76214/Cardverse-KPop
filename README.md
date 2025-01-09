@@ -33,7 +33,9 @@ This project provides a platform for K-Pop enthusiasts to collect and trade virt
 - **Containerization**: Docker for environment consistency
 - **Web Server**: Nginx for serving the application
 
-![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/SQL_arichecture.png)
+<div align="center">
+  <img src="https://github.com/andrew76214/Cardverse-KPop/blob/main/img/SQL_arichecture.png" alt="SQL Architecture" />
+</div>
 
 ## Installation
 
@@ -52,28 +54,35 @@ To set up the project locally, follow these steps:
    ```bash
    docker-compose up --build
    ```
-4. Access the application:
+4. **Access the application**:
 
-  Once the containers are up and running, the application can be accessed at ```http://localhost:5000```.
+   Once the containers are up and running, the application can be accessed at `http://localhost:5000`.
 
 ## Usage
-- Register: Create a new account to start your photocard collection.
 
-![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/signup_interface.png)
+<div align="center">
+  <img src="https://github.com/andrew76214/Cardverse-KPop/blob/main/img/signup_interface.png" alt="Signup Interface" />
+</div>
 
-- Log In: Access your account to view and manage your collection.
+- **Register**: Create a new account to start your photocard collection.
 
-![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/login_interface.png)
+<div align="center">
+  <img src="https://github.com/andrew76214/Cardverse-KPop/blob/main/img/login_interface.png" alt="Login Interface" />
+</div>
 
-- Browse Photocards: Explore the available K-Pop photocards.
+- **Log In**: Access your account to view and manage your collection.
 
-![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/collect_interface.png)
-![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/card_interface.png)
+<div align="center">
+  <img src="https://github.com/andrew76214/Cardverse-KPop/blob/main/img/collect_interface.png" alt="Collect Interface" />
+  <img src="https://github.com/andrew76214/Cardverse-KPop/blob/main/img/card_interface.png" alt="Card Interface" />
+</div>
 
-- Add to Collection: Select photocards to add to your personal collection.  
-- Trade Photocards: Initiate trades with other users to expand your collection.
+- **Browse Photocards**: Explore the available K-Pop photocards.
+- **Add to Collection**: Select photocards to add to your personal collection.
+- **Trade Photocards**: Initiate trades with other users to expand your collection.
 
 ## Folder Structure
+
 The project structure is organized as follows:
 
 ```bash
@@ -104,21 +113,25 @@ Cardverse-KPop/
 └── wait_for_sql.sh
 ```
 
-- The app/ directory contains the main application code, including models, routes, forms, and static assets.
-- The html5up-forty/ directory includes the frontend template used for the application's design.
-- The migrations/ directory is used for database migrations.
-- Configuration files such as config.py, nginx.conf, and docker-compose.yaml are located in the root directory.
+- The `app/` directory contains the main application code, including models, routes, forms, and static assets.
+- The `html5up-forty/` directory includes the frontend template used for the application's design.
+- The `migrations/` directory is used for database migrations.
+- Configuration files such as `config.py`, `nginx.conf`, and `docker-compose.yaml` are located in the root directory.
 
 ## Mind Map
 
-![image](https://github.com/andrew76214/Cardverse-KPop/blob/main/img/mind_map.png)
+<div align="center">
+  <img src="https://github.com/andrew76214/Cardverse-KPop/blob/main/img/mind_map.png" alt="Mind Map" />
+</div>
 
 ## License
+
 This project is licensed under the MIT License.
 
 ## Contributors
+
 <a href="https://github.com/andrew76214/Cardverse-KPop/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=andrew76214/Cardverse-KPop" />
+  <img src="https://contrib.rocks/image?repo=andrew76214/Cardverse-KPop" alt="Contributors" />
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks).
