@@ -32,6 +32,8 @@ This project provides a platform for K-Pop enthusiasts to collect and trade virt
 - **Containerization**: Docker for environment consistency
 - **Web Server**: Nginx for serving the application
 
+https://github.com/andrew76214/Cardverse-KPop/tree/main/img/SQL_arichecture.png
+
 ## Installation
 
 To set up the project locally, follow these steps:
