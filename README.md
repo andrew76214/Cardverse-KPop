@@ -86,10 +86,8 @@ Cardverse-KPop/
 ├── config.py
 ├── docker-compose.yaml
 ├── nginx.conf
-├── nginx_https.conf
 ├── requirements.txt
 ├── run.py
-├── setup-letsencrypt.sh
 └── wait_for_sql.sh
 ```
 
